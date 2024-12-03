@@ -1,13 +1,15 @@
 import './App.css'
 import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
-import LandingPage from './b2b-matchmaking/pages/LandingPage';
+import Login from './admin/pages/Login';
+import DashTable from './admin/pages/DashTable';
 
 function App() {
   return (
     <>
     <Router>
       <Routes>
-        <Route path='/matchmaking' element={<LandingPage/>}/>
+        <Route path='/login' element={<Login/>}/>
+        <Route path='/dashboard-table' element={<DashTable/>}/>
       </Routes>
     </Router>
     </>

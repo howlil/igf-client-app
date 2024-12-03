@@ -6,7 +6,11 @@ export default {
   theme: {
     extend: {
       colors: {
-        bgb2b: '#d0d0d0'
+        bgb2b: '#cbcdcd',
+        red: '#ED2137'
+      },
+      backgroundImage: {
+        'bg-login': "url('/public/admin/bg-login.jpg')"
       }
     },
   },
