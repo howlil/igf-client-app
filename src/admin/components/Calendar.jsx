@@ -129,7 +129,7 @@ export default function Calendar({ label }) {
             sx={{
               mr: isMobile ? 0 : 2,
               mb: isMobile ? 1 : 0,
-              backgroundColor: "black",
+              backgroundColor: "#ED2137",
               width: isMobile ? "100%" : "auto",
             }}
           >
@@ -302,7 +302,7 @@ export default function Calendar({ label }) {
           top: isMobile ? 170 : 150,
           left: 0,
           zIndex: 1000,
-          backgroundColor: "black",
+          backgroundColor: "#ED2137",
           borderRadius: "10px", 
           color: "white",
           width: "40px", 
@@ -324,7 +324,7 @@ export default function Calendar({ label }) {
           height: "40px", 
           zIndex: 1000,
           color: "white",
-          backgroundColor: "black",
+          backgroundColor: "#ED2137",
           border: "1px solid",
         }}
       >

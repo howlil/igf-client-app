@@ -106,7 +106,7 @@ export default function Navbar() {
             <DisclosureButton
               key={item.name}
               as="a"
-              href={item.href}
+              href={item.hrefs[0]}
               aria-current={item.current ? 'page' : undefined}
               className={classNames(
                 item.current ? 'border-b-2 border-red text-black' : 'text-gray-300 hover:border-b-2 hover:border-red hover:text-black',
