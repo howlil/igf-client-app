@@ -300,7 +300,7 @@ export default function Calendar({ label }) {
         sx={{
           position: "absolute",
           top: isMobile ? 170 : 150,
-          left: 10,
+          left: 0,
           zIndex: 1000,
           backgroundColor: "black",
           borderRadius: "10px", 
@@ -318,7 +318,7 @@ export default function Calendar({ label }) {
         sx={{
           position: "absolute",
           top: isMobile ? 170 : 150,
-          right: 10,
+          right: 0,
           borderRadius: "10px", 
           width: "40px", 
           height: "40px", 

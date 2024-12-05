@@ -7,7 +7,10 @@ export default {
     extend: {
       colors: {
         bgb2b: '#cbcdcd',
-        red: '#ED2137'
+        red: {
+          DEFAULT: '#ED2137', 
+          100: '#FEECEF',    
+        },
       },
       backgroundImage: {
         'bg-login': "url('/public/admin/bg-login.jpg')"
