@@ -10,7 +10,7 @@ export default {
         red: '#ED2137'
       },
       backgroundImage: {
-        'bg-login': "url('/public/admin/bg-login.jpg')"
+        // 'bg-login': "url('/public/admin/bg-login.jpg')"
       }
     },
   },
