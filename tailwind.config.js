@@ -13,7 +13,7 @@ export default {
         },
       },
       backgroundImage: {
-        // 'bg-login': "url('/public/admin/bg-login.jpg')"
+        'bg-login': "url('/public/admin/bg-login.jpg')"
       }
     },
   },
