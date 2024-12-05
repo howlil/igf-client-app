@@ -279,9 +279,9 @@ export default function Approval() {
         <Navbar/>
 
         <div className="p-8">
-        <h1 className="text-2xl font-bold mb-4">Approval Table</h1>
-        <p className="w-full md:w-1/2">Lorem ipsum dolor sit amet consectetur adipisicing elit. Deleniti quaerat laboriosam earum voluptatibus soluta amet autem aperiam, eum vero, est praesentium reprehenderit minima reiciendis mollitia! Non odit tempore maiores nesciunt?</p>
-        <DynamicTable columns={columns} data={data} positionTH={'text-center'} columnStyles={columnStyles} columnWidths={columnWidths}/>
+          <h1 className="text-2xl font-bold mb-4">Approval Table</h1>
+          <p className="w-full md:w-1/2">Lorem ipsum dolor sit amet consectetur adipisicing elit. Deleniti quaerat laboriosam earum voluptatibus soluta amet autem aperiam, eum vero, est praesentium reprehenderit minima reiciendis mollitia! Non odit tempore maiores nesciunt?</p>
+          <DynamicTable columns={columns} data={data} positionTH={'text-center'} columnStyles={columnStyles} columnWidths={columnWidths}/>
         </div>
     </div>
 

@@ -7,6 +7,7 @@ const DynamicTable = ({
   columnStyles,
   columnWidths,
   rowsPerPage = 13,
+  onRowClick, // Callback for row click
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -50,8 +51,9 @@ const DynamicTable = ({
             <tr
               key={rowIndex}
               className={`${
-                rowIndex % 2 === 0 ? "bg-white" : "bg-white"
-              } hover:bg-gray-100`}
+                rowIndex % 2 === 0 ? "bg-white" : "bg-gray-50"
+              } ${onRowClick ? "cursor-pointer hover:bg-gray-100" : ""}`}
+              onClick={() => onRowClick && onRowClick(row)} // Trigger the row click callback if provided
             >
               {columns.map((column, colIndex) => (
                 <td
