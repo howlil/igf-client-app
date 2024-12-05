@@ -541,71 +541,106 @@ export default function Conference() {
 
       {/* modal edit */}
       {isEditModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-lg w-full max-w-md mx-4">
-            {/* Modal Header */}
-            <div className="flex justify-between items-center px-6 py-4 border-b border-gray-200">
-              <h2 className="text-xl font-bold">Edit Data Conference</h2>
-              <button
-                className="text-red-500 hover:text-red-700 text-lg"
-                onClick={() => setEditModalOpen(false)} 
-              >
-                ×
-              </button>
-            </div>
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="bg-white rounded-lg shadow-lg w-full max-w-md mx-4 my-8 md:max-w-lg overflow-hidden">
+          {/* Modal Header */}
+          <div className="sticky top-0 bg-white z-10 px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+            <h2 className="text-xl font-bold">Edit Data Conference</h2>
+            <button
+              className="text-red-500 hover:text-red-700 text-lg"
+              onClick={() => setEditModalOpen(false)}
+            >
+              ×
+            </button>
+          </div>
 
-            {/* Modal Body */}
-            <div className="p-6 space-y-4">
+          {/* Modal Body */}
+          <div className="p-6 space-y-4 overflow-y-auto max-h-[80vh]">
+            <form>
+              <div className="mb-4">
+                <Input
+                  id="conference_name"
+                  type="text"
+                  label="Name"
+                  name="conference_name"
+                  placeholder="Name of Conference"
+                />
+              </div>
 
-              <form action="">
-                    <div className="mb-4">
-                      <Input id={'conference_name'} type={'text'} label={'Name'} name={'conference_name'} placeholder={'Name of Conference'} />
-                    </div>
+              <div className="mb-4">
+                <Input
+                  id="conference_description"
+                  type="text"
+                  label="Description"
+                  name="conference_description"
+                  placeholder="Description of Conference"
+                />
+              </div>
 
-                    <div className="mb-4">
-                      <Input id={'conference_description'} type={'text'} label={'Description'} name={'conference_description'} placeholder={'Description of Conference'} />
-                    </div>
+              <div className="mb-4">
+                <Input
+                  id="conference_venue"
+                  type="text"
+                  label="Venue"
+                  name="conference_venue"
+                  placeholder="Venue of Conference"
+                />
+              </div>
 
-                    <div className="mb-4">
-                      <Input id={'conference_venue'} type={'text'} label={'Venue'} name={'conference_venue'} placeholder={'Venue of Conference'} />
-                    </div>
+              <div className="mb-4">
+                <Input id="conference_date" type="date" label="Date" name="conference_date" />
+              </div>
 
-                    <div className="mb-4">
-                      <Input id={'conference_date'} type={'date'} label={'Date'} name={'conference_date'} />
-                    </div>
+              <div className="mb-4">
+                <Input id="conference_time" type="time" label="Time" name="conference_time" />
+              </div>
 
-                    <div className="mb-4">
-                      <Input id={'conference_time'} type={'time'} label={'Time'} name={'conference_time'} />
-                    </div>
+              <div className="mb-4">
+                <Input
+                  id="conference_speaker"
+                  type="text"
+                  label="Speaker"
+                  name="conference_speaker"
+                  placeholder="Speaker of Conference"
+                />
+              </div>
 
-                    <div className="mb-4">
-                      <Input id={'conference_speaker'} type={'text'} label={'Speaker'} name={'conference_speaker'}  placeholder={'Speaker of Conference'}/>
-                    </div>
+              <div className="mb-4">
+                <Input
+                  id="conference_moderator"
+                  type="text"
+                  label="Moderator"
+                  name="conference_moderator"
+                  placeholder="Moderator of Conference"
+                />
+              </div>
 
-                    <div className="mb-4">
-                      <Input id={'conference_moderator'} type={'text'} label={'Moderator'} name={'conference_moderator'}  placeholder={'Moderator of Conference'}/>
-                    </div>
+              <div className="mb-4">
+                <Input
+                  id="conference_table"
+                  type="number"
+                  label="Number of Tables"
+                  name="conference_table"
+                  placeholder="Number of Tables"
+                />
+              </div>
 
-                    <div className="mb-4">
-                      <Input id={'conference_table'} type={'number'} label={'Number of Tables'} name={'conference_table'}  placeholder={'Number of Tables'}/>
-                    </div>
-
-                    {/* Submit Button */}
-                    <div className="flex justify-center">
-                      <button
-                        className="bg-red-500 text-white px-6 py-2 rounded-md hover:bg-red-600"
-                        onClick={handleSubmitEdit}
-                      >
-                        Submit
-                      </button>
-                    </div>
-              </form>
-
-
-            </div>
+              {/* Submit Button */}
+              <div className="flex justify-center">
+                <button
+                  type="button"
+                  className="bg-red-500 text-white px-6 py-2 rounded-md hover:bg-red-600"
+                  onClick={handleSubmitEdit}
+                >
+                  Submit
+                </button>
+              </div>
+            </form>
           </div>
         </div>
-      )}
+      </div>
+    )}
+
 
       {/* modal delete */}
       {isDelModalOpen && (
