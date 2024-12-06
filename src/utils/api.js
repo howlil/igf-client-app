@@ -3,12 +3,12 @@ import axios from 'axios';
 const token = localStorage.getItem("token");
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
+  baseURL: `${import.meta.env.VITE_API_URL}/api`,
   headers: {
     'Content-Type': 'application/json',
-    Authorization: `Bearer ${token}`, 
+    Authorization: token ? `Bearer ${token}` : '',
   },
-  withCredentials: true, 
+  withCredentials: false, 
 });
 
 api.interceptors.response.use(
