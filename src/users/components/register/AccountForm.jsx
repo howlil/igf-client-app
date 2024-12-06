@@ -1,18 +1,34 @@
 import { useState } from "react";
-import { Eye } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
+import useFormStore from "../../context/useFormStore";
 
 const AccountForm = ({ onNext }) => {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+    // Use memoized selectors to avoid infinite re-renders
+    const email = useFormStore((state) => state.email);
+    const password = useFormStore((state) => state.password);
+    const confirm_password = useFormStore((state) => state.confirm_password);
+    const username = useFormStore((state) => state.username);
+    const phone_number = useFormStore((state) => state.phone_number);
+    const setField = useFormStore((state) => state.setField);
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        onNext();
+    };
+
     return (
-        <div className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4">
             <div>
                 <label className="block text-sm font-medium mb-1">E-Mail</label>
                 <input
                     type="email"
                     className="w-full p-2 border rounded-lg focus:outline-none focus:ring-1 focus:ring-red-500"
                     placeholder="Enter your email"
+                    value={email}
+                    onChange={(e) => setField("email", e.target.value)}
                 />
             </div>
 
@@ -23,6 +39,8 @@ const AccountForm = ({ onNext }) => {
                         type={showPassword ? "text" : "password"}
                         className="w-full p-2 border rounded-lg focus:outline-none focus:ring-1 focus:ring-red-500 pr-10"
                         placeholder="Enter password"
+                        value={password}
+                        onChange={(e) => setField("password", e.target.value)}
                     />
                     <button
                         type="button"
@@ -41,6 +59,8 @@ const AccountForm = ({ onNext }) => {
                         type={showConfirmPassword ? "text" : "password"}
                         className="w-full p-2 border rounded-lg focus:outline-none focus:ring-1 focus:ring-red-500 pr-10"
                         placeholder="Confirm password"
+                        value={confirm_password}
+                        onChange={(e) => setField("confirm_password", e.target.value)}
                     />
                     <button
                         type="button"
@@ -58,6 +78,8 @@ const AccountForm = ({ onNext }) => {
                     type="text"
                     className="w-full p-2 border rounded-lg focus:outline-none focus:ring-1 focus:ring-red-500"
                     placeholder="Enter your name"
+                    value={username}
+                    onChange={(e) => setField("username", e.target.value)}
                 />
             </div>
 
@@ -67,19 +89,21 @@ const AccountForm = ({ onNext }) => {
                     type="tel"
                     className="w-full p-2 border rounded-lg focus:outline-none focus:ring-1 focus:ring-red-500"
                     placeholder="Enter phone number"
+                    value={phone_number}
+                    onChange={(e) => setField("phone_number", e.target.value)}
                 />
             </div>
 
             <div className="pt-4">
                 <button
-                    onClick={onNext}
+                    type="submit"
                     className="w-full bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 transition-colors"
                 >
                     Next
                 </button>
             </div>
-        </div>
+        </form>
     );
-}
+};
 
-export default AccountForm
+export default AccountForm;

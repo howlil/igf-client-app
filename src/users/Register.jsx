@@ -4,17 +4,29 @@ import ClassificationForm from "./components/register/ClassificationForm";
 import ScheduleForm from "./components/register/ScheduleForm";
 import StepProgress from "./components/register/StepProgress";
 import { useState } from "react";
+import useFormStore from "./context/useFormStore";
 
 export default function Register() {
   const [currentStep, setCurrentStep] = useState(1);
+  const submitForm = useFormStore((state) => state.submitForm);
 
   const handleNext = () => {
     setCurrentStep(prev => prev + 1);
   };
 
-  const handleSubmit = () => {
-    console.log('Form submitted');
+  const handleSubmit = async () => {
+    try {
+      const res = await submitForm();
+      alert(res.message)
+      if (res.success === 'true') {
+        window.location.href("/")
+      }
+    } catch (error) {
+      console.error("Failed to register:", error);
+      alert("Failed to register. Please try again.");
+    }
   };
+
 
   return (
     <div>
