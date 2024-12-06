@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import NotApprovalUser from "./components/pages/NotApprovalUser";
-import ApprovalUserList from "./components/pages/ApprovalUserList";
+import NotApprovalUser from "./components/approval/NotApprovalUser";
+import ApprovalUserList from "./components/approval/ApprovalUserList";
 import Layout from "./components/Layout";
 
 export default function ApprovalUser() {
