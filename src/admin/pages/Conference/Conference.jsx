@@ -1,256 +1,97 @@
 import { useNavigate } from "react-router-dom";
 import Navbar from "../../components/navbar";
 import DynamicTable from "../../components/Table";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Input from "../../components/input";
 import { FaEdit, FaTrash } from "react-icons/fa";
 import Alert from "../../components/Alert";
 import AlertSuccess from "../../components/AlertSuccess";
+import api from '../../../utils/api'
+import Swal from "sweetalert2";
+import InputEdit from "../../components/InputEdit";
 
 export default function Conference() {
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    const username = localStorage.getItem('username')
+    if (!token && username !== 'admin') {
+      navigate('/notAllowed');
+    }
+  }, [navigate]);
 
   const [isModalOpenAdd, setModalOpenAdd] = useState(false);
   const [isEditModalOpen, setEditModalOpen] = useState(false);
   const [selectedRow, setSelectedRow] = useState(null);
   const [isDelModalOpen, setDelModalOpen] = useState(false)
   const [isSuccModalOpen, setSuccModalOpen] = useState(false)
-  
+  const [dataConf, setData] = useState([])
+  const [formState, setFormState] = useState({
+    name: "",
+    description: "",
+    venue: "",
+    date_start: "",
+    date_end: "",
+    time_start: "",
+    time_end: "",
+    speaker: "",
+    moderator: "",
+    sum_table: "",
+  });
+  const [isLoading, setLoading] = useState()
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormState({
+      ...formState,
+      [name]: value,
+    });
+  };
+
   const columns = [
     { key: "no", label: "No " },
-    { key: "nameConference", label: "Conference Name" },
-    { key: "descriptionConference", label: "Conference Description" },
-    { key: "venueConference", label: "Conference Venue" },
-    { key: "dateConference", label: "Conference Date" },
-    { key: "timeConference", label: "Conference Time" },
-    { key: "speakerConference", label: "Speaker" },
-    { key: "moderatorConference", label: "Moderator" },
-    { key: "tableCount", label: "Number of Tables" },
+    { key: "name", label: "Conference Name" },
+    { key: "description", label: "Conference Description" },
+    { key: "venue", label: "Conference Venue" },
+    { key: "date", label: "Conference Date" },
+    { key: "time", label: "Conference Time" },
+    { key: "speaker", label: "Speaker" },
+    { key: "moderator", label: "Moderator" },
+    { key: "sum_table", label: "Number of Tables" },
     { key: "actions", label: "Actions" },
   ];
 
-  const data = [
-    {
-      no: "01",
-      nameConference: "Tech Innovations 2024",
-      descriptionConference: "Exploring the latest advancements in technology.",
-      venueConference: "Hall A",
-      dateConference: "2024-07-27",
-      timeConference: "10:00 - 12:00",
-      speakerConference: "Dr. John Doe",
-      moderatorConference: "Ms. Jane Smith",
-      tableCount: "15",
-    },
-    {
-      no: "02",
-      nameConference: "Healthcare Summit",
-      descriptionConference: "Discussing the future of global healthcare systems.",
-      venueConference: "Hall B",
-      dateConference: "2024-08-15",
-      timeConference: "09:00 - 11:30",
-      speakerConference: "Prof. Alice Johnson",
-      moderatorConference: "Mr. David Clark",
-      tableCount: "20",
-    },
-    {
-      no: "03",
-      nameConference: "AI and Society",
-      descriptionConference: "The impact of artificial intelligence on society and ethics.",
-      venueConference: "Auditorium",
-      dateConference: "2024-09-10",
-      timeConference: "14:00 - 16:00",
-      speakerConference: "Dr. Emily Davis",
-      moderatorConference: "Mr. Robert Brown",
-      tableCount: "12",
-    },
-    {
-      no: "04",
-      nameConference: "Business Trends 2024",
-      descriptionConference: "Analyzing key business trends for the upcoming year.",
-      venueConference: "Room 101",
-      dateConference: "2024-10-05",
-      timeConference: "13:00 - 15:00",
-      speakerConference: "Dr. Michael Lee",
-      moderatorConference: "Ms. Sarah Wilson",
-      tableCount: "18",
-    },
-    {
-      no: "05",
-      nameConference: "Green Energy Forum",
-      descriptionConference: "Strategies and solutions for sustainable energy.",
-      venueConference: "Hall A",
-      dateConference: "2024-11-12",
-      timeConference: "11:00 - 13:00",
-      speakerConference: "Dr. Karen White",
-      moderatorConference: "Mr. James Taylor",
-      tableCount: "10",
-    },
-    {
-      no: "06",
-      nameConference: "Education Reimagined",
-      descriptionConference: "Future innovations in education and learning technologies.",
-      venueConference: "Hall B",
-      dateConference: "2024-12-01",
-      timeConference: "09:30 - 11:30",
-      speakerConference: "Prof. Olivia Martin",
-      moderatorConference: "Ms. Laura Adams",
-      tableCount: "25",
-    },
-    {
-      no: "07",
-      nameConference: "Digital Marketing Strategies",
-      descriptionConference: "Latest techniques and tools in digital marketing.",
-      venueConference: "Room 102",
-      dateConference: "2024-06-15",
-      timeConference: "10:00 - 12:30",
-      speakerConference: "Dr. Patrick Hill",
-      moderatorConference: "Ms. Rachel Green",
-      tableCount: "22",
-    },
-    {
-      no: "08",
-      nameConference: "Blockchain Revolution",
-      descriptionConference: "The transformative impact of blockchain technology.",
-      venueConference: "Auditorium",
-      dateConference: "2024-07-20",
-      timeConference: "15:00 - 17:00",
-      speakerConference: "Mr. George Evans",
-      moderatorConference: "Ms. Diana Moore",
-      tableCount: "30",
-    },
-    {
-      no: "09",
-      nameConference: "Space Exploration",
-      descriptionConference: "The next frontier in space science and technology.",
-      venueConference: "Hall A",
-      dateConference: "2024-08-02",
-      timeConference: "13:00 - 15:30",
-      speakerConference: "Dr. Steven Carter",
-      moderatorConference: "Mr. Brian Harris",
-      tableCount: "28",
-    },
-    {
-      no: "10",
-      nameConference: "Financial Leadership Summit",
-      descriptionConference: "Key insights into financial leadership and strategies.",
-      venueConference: "Room 103",
-      dateConference: "2024-09-25",
-      timeConference: "14:00 - 16:30",
-      speakerConference: "Ms. Charlotte Baker",
-      moderatorConference: "Mr. Henry Scott",
-      tableCount: "16",
-    },
-    {
-      no: "11",
-      nameConference: "Cultural Diversity Forum",
-      descriptionConference: "Celebrating and discussing cultural diversity worldwide.",
-      venueConference: "Hall B",
-      dateConference: "2024-10-10",
-      timeConference: "09:00 - 11:00",
-      speakerConference: "Dr. Emma Brooks",
-      moderatorConference: "Ms. Clara Reed",
-      tableCount: "12",
-    },
-    {
-      no: "12",
-      nameConference: "Cybersecurity Advances",
-      descriptionConference: "Exploring the latest in cybersecurity technologies.",
-      venueConference: "Auditorium",
-      dateConference: "2024-11-08",
-      timeConference: "11:30 - 13:30",
-      speakerConference: "Mr. Alan Cooper",
-      moderatorConference: "Ms. Grace Turner",
-      tableCount: "20",
-    },
-    {
-      no: "13",
-      nameConference: "Global Climate Change",
-      descriptionConference: "Addressing the challenges of global climate change.",
-      venueConference: "Hall A",
-      dateConference: "2024-12-15",
-      timeConference: "15:00 - 17:30",
-      speakerConference: "Dr. William King",
-      moderatorConference: "Ms. Anna James",
-      tableCount: "18",
-    },
-    {
-      no: "14",
-      nameConference: "Quantum Computing",
-      descriptionConference: "The future of computing with quantum technologies.",
-      venueConference: "Room 104",
-      dateConference: "2024-01-20",
-      timeConference: "10:00 - 12:00",
-      speakerConference: "Dr. Peter Rogers",
-      moderatorConference: "Ms. Emily Carter",
-      tableCount: "22",
-    },
-    {
-      no: "15",
-      nameConference: "Entrepreneurship Summit",
-      descriptionConference: "Strategies for successful startups and entrepreneurship.",
-      venueConference: "Hall B",
-      dateConference: "2024-02-18",
-      timeConference: "13:00 - 15:00",
-      speakerConference: "Ms. Megan Bailey",
-      moderatorConference: "Mr. Jason Long",
-      tableCount: "19",
-    },
-    {
-      no: "16",
-      nameConference: "Women in Leadership",
-      descriptionConference: "Empowering women in leadership roles.",
-      venueConference: "Room 105",
-      dateConference: "2024-03-08",
-      timeConference: "09:30 - 11:30",
-      speakerConference: "Ms. Sophia Perez",
-      moderatorConference: "Ms. Chloe Nelson",
-      tableCount: "17",
-    },
-    {
-      no: "17",
-      nameConference: "Future of Mobility",
-      descriptionConference: "Innovations in transportation and mobility.",
-      venueConference: "Auditorium",
-      dateConference: "2024-04-10",
-      timeConference: "10:00 - 12:30",
-      speakerConference: "Mr. Oliver Wood",
-      moderatorConference: "Mr. Liam Mitchell",
-      tableCount: "15",
-    },
-    {
-      no: "18",
-      nameConference: "Renewable Energy Forum",
-      descriptionConference: "Discussions on renewable energy innovations.",
-      venueConference: "Hall A",
-      dateConference: "2024-05-22",
-      timeConference: "14:00 - 16:00",
-      speakerConference: "Dr. Jacob Young",
-      moderatorConference: "Ms. Zoe Allen",
-      tableCount: "14",
-    },
-    {
-      no: "19",
-      nameConference: "E-commerce Innovations",
-      descriptionConference: "Trends and tools shaping the future of e-commerce.",
-      venueConference: "Room 106",
-      dateConference: "2024-06-14",
-      timeConference: "11:00 - 13:00",
-      speakerConference: "Ms. Amelia Green",
-      moderatorConference: "Mr. Lucas Adams",
-      tableCount: "12",
-    },
-    {
-      no: "20",
-      nameConference: "Digital Transformation",
-      descriptionConference: "The evolution of digital technologies in business.",
-      venueConference: "Hall B",
-      dateConference: "2024-07-19",
-      timeConference: "10:30 - 12:30",
-      speakerConference: "Mr. Ethan Hill",
-      moderatorConference: "Ms. Ava Carter",
-      tableCount: "20",
-    },
-];
+  const fetchConferences = async () => {
+    try {
+      const response = await api.get("/conferences");
+  
+      const formattedData = response.data.data.map((item, index) => ({
+        no: String(index + 1).padStart(2, "0"),
+        name: item.name,
+        description: item.description,
+        venue: item.venue,
+        date: `${item.date_start} - ${item.date_end}`,
+        time: `${item.time_start} - ${item.time_end}`,
+        speaker: item.speaker,
+        moderator: item.moderator,
+        sum_table: String(item.sum_table),
+        id: item.id
+      }));
+  
+      setData(formattedData);
+    } catch (error) {
+      console.error("Error fetching conferences:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchConferences();
+  }, []);
+
+  useEffect(() => {
+    setFilteredData(dataConf); 
+  }, [dataConf]);
 
   const columnStyles = [
     "text-center",
@@ -277,9 +118,29 @@ export default function Conference() {
     setDelModalOpen(true)
   };
 
-  const handleConfirm = () => {
-    setDelModalOpen(false)
-    setSuccModalOpen(true)
+  console.log(selectedRow)
+
+  const handleConfirm = async () => {
+    try {
+      setLoading(true)
+      const response = await api.delete(`/conferences/${selectedRow.id}`)
+      if (response.data.success) {
+          setDelModalOpen(false)
+          setSuccModalOpen(true)
+          fetchConferences()
+      } else {
+        Swal.fire({
+          text: response.data.message,
+          icon: "error",
+          timer: 1000,
+          showConfirmButton: false, 
+        });
+      }
+    } catch (error) {
+      console.error(error)
+    } finally {
+      setLoading(false)
+    }
   }
 
   const handleCancel = () => {
@@ -290,33 +151,130 @@ export default function Conference() {
     setSuccModalOpen(false)
   }
 
-  const handleSubmitAdd = () => {
-    setModalOpenAdd(false)
-    setSuccModalOpen(true)
+  const handleSubmitAdd = async (e) => {
+    e.preventDefault()
+    try {
+      setLoading(true)
+      const formData = new FormData();
+      formData.append("name", formState.name);
+      formData.append("description", formState.description);
+      formData.append("venue", formState.venue);
+      formData.append("date_start", formState.date_start);
+      formData.append("date_end", formState.date_end);
+      formData.append("time_start", formState.time_start);
+      formData.append("time_end", formState.time_end);
+      formData.append("speaker", formState.speaker);
+      formData.append("moderator", formState.moderator);
+      formData.append("sum_table", String(formState.sum_table));
+      
+      const response = await api.post('/conferences', formData, {
+        headers: {
+          "Content-Type": "multipart/form-data"
+        }
+      });
+      if (response.data.success) {
+        setModalOpenAdd(false)
+        setSuccModalOpen(true)
+        fetchConferences()
+
+      } else {
+        Swal.fire({
+          text: response.data.message,
+          icon: "error",
+          timer: 1000,
+          showConfirmButton: false, 
+        });
+      }
+    } catch (error) {
+      console.error(error)
+    }finally {
+      setLoading(false)
+    }
   }
 
-  const handleSubmitEdit = () => {
-    setEditModalOpen(false)
-    setSuccModalOpen(true)
+  useEffect(() => {
+    if (selectedRow) {
+      // Pisahkan date dan time
+      const [date_start, date_end] = selectedRow.date.split(" - ");
+      const [time_start, time_end] = selectedRow.time.split(" - ");
+  
+      // Set data pada formData
+      setFormState({
+        name: selectedRow.name,
+        description: selectedRow.description,
+        venue: selectedRow.venue,
+        date_start: date_start,
+        date_end: date_end,
+        time_start: time_start,
+        time_end: time_end,
+        speaker: selectedRow.speaker,
+        moderator: selectedRow.moderator,
+        sum_table: selectedRow.sum_table,
+      });
+    }
+  }, [selectedRow]);
+
+  const handleSubmitEdit = async (e) => {
+    e.preventDefault()
+    try {
+      setLoading(true)
+      const formData = new FormData();
+      formData.append("_method", "PUT");
+      formData.append("name", formState.name);
+      formData.append("description", formState.description);
+      formData.append("venue", formState.venue);
+      formData.append("date_start", formState.date_start);
+      formData.append("date_end", formState.date_end);
+      formData.append("time_start", formState.time_start);
+      formData.append("time_end", formState.time_end);
+      formData.append("speaker", formState.speaker);
+      formData.append("moderator", formState.moderator);
+      formData.append("sum_table", String(formState.sum_table));
+      
+      const response = await api.post(`/conferences/${selectedRow.id}`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data"
+        }
+      });
+
+      if (response.data.success) {
+        setEditModalOpen(false)
+        setSuccModalOpen(true)
+        fetchConferences()
+      } else {
+        Swal.fire({
+          text: response.data.message,
+          icon: "error",
+          timer: 1000,
+          showConfirmButton: false, 
+        });
+      }
+    } catch (error) {
+      console.error(error)
+    } finally {
+      setLoading(false)
+    }
+
   }
 
   const [searchQuery, setSearchQuery] = useState(""); 
-  const [filteredData, setFilteredData] = useState(data); 
+  const [filteredData, setFilteredData] = useState(dataConf); 
 
   const handleSearch = (event) => {
     const query = event.target.value.toLowerCase();
     setSearchQuery(query);
     setFilteredData(
-      data.filter(
+      dataConf.filter(
         (item) =>
           item.no.toLowerCase().includes(query) ||
-          item.nameConference.toLowerCase().includes(query) ||
-          item.descriptionConference.toLowerCase().includes(query) ||
-          item.venueConference.toLowerCase().includes(query) ||
-          item.dateConference.toLowerCase().includes(query) ||
-          item.speakerConference.toLowerCase().includes(query) ||
-          item.moderatorConference.toLowerCase().includes(query) ||
-          item.tableCount.toLowerCase().includes(query)
+          item.name.toLowerCase().includes(query) ||
+          item.description.toLowerCase().includes(query) ||
+          item.venue.toLowerCase().includes(query) ||
+          item.date.toLowerCase().includes(query) ||
+          item.time.toLowerCase().includes(query) ||
+          item.speaker.toLowerCase().includes(query) ||
+          item.moderator.toLowerCase().includes(query) ||
+          item.sum_table.toLowerCase().includes(query)
       )
     );
   };
@@ -443,93 +401,130 @@ export default function Conference() {
 
             {/* Modal Body */}
             <div className="p-6 space-y-4 overflow-y-auto max-h-[80vh]">
-              <form>
+              <form onSubmit={handleSubmitAdd}>
                 <div className="mb-4">
                   <Input
-                    id={'conference_name'}
+                    id={'name'}
                     type={'text'}
                     label={'Name'}
-                    name={'conference_name'}
+                    name={'name'}
                     placeholder={'Name of Conference'}
+                    value={formState.name}
+                    onChange={handleInputChange}
                   />
                 </div>
 
                 <div className="mb-4">
                   <Input
-                    id={'conference_description'}
+                    id={'description'}
                     type={'text'}
                     label={'Description'}
-                    name={'conference_description'}
+                    name={'description'}
                     placeholder={'Description of Conference'}
+                    value={formState.description}
+                    onChange={handleInputChange}
                   />
                 </div>
 
                 <div className="mb-4">
                   <Input
-                    id={'conference_venue'}
+                    id={'venue'}
                     type={'text'}
                     label={'Venue'}
-                    name={'conference_venue'}
+                    name={'venue'}
                     placeholder={'Venue of Conference'}
+                    value={formState.venue}
+                    onChange={handleInputChange}
                   />
                 </div>
 
                 <div className="mb-4">
                   <Input
-                    id={'conference_date'}
+                    id={'date_start'}
                     type={'date'}
-                    label={'Date'}
-                    name={'conference_date'}
+                    label={'Date Start'}
+                    name={'date_start'}
+                    value={formState.date_start}
+                    onChange={handleInputChange}
                   />
                 </div>
 
                 <div className="mb-4">
                   <Input
-                    id={'conference_time'}
+                    id={'date_end'}
+                    type={'date'}
+                    label={'Date End'}
+                    name={'date_end'}
+                    value={formState.date_end}
+                    onChange={handleInputChange}
+                  />
+                </div>
+
+                <div className="mb-4">
+                  <Input
+                    id={'time_start'}
                     type={'time'}
-                    label={'Time'}
-                    name={'conference_time'}
+                    label={'Time Start'}
+                    name={'time_start'}
+                    value={formState.time_start}
+                    onChange={handleInputChange}
+                  />
+                </div>
+                
+                <div className="mb-4">
+                  <Input
+                    id={'time_end'}
+                    type={'time'}
+                    label={'Time End'}
+                    name={'time_end'}
+                    value={formState.time_end}
+                    onChange={handleInputChange}
                   />
                 </div>
 
                 <div className="mb-4">
                   <Input
-                    id={'conference_speaker'}
+                    id={'speaker'}
                     type={'text'}
                     label={'Speaker'}
-                    name={'conference_speaker'}
+                    name={'speaker'}
                     placeholder={'Speaker of Conference'}
+                    value={formState.speaker}
+                    onChange={handleInputChange}
                   />
                 </div>
 
                 <div className="mb-4">
                   <Input
-                    id={'conference_moderator'}
+                    id={'moderator'}
                     type={'text'}
                     label={'Moderator'}
-                    name={'conference_moderator'}
+                    name={'moderator'}
                     placeholder={'Moderator of Conference'}
+                    value={formState.moderator}
+                    onChange={handleInputChange}
                   />
                 </div>
 
                 <div className="mb-4">
                   <Input
-                    id={'conference_table'}
+                    id={'sum_table'}
                     type={'number'}
                     label={'Number of Tables'}
-                    name={'conference_table'}
+                    name={'sum_table'}
                     placeholder={'Number of Tables'}
+                    value={formState.sum_table}
+                    onChange={handleInputChange}
                   />
                 </div>
 
                 {/* Submit Button */}
                 <div className="flex justify-center">
                   <button
-                    type="button"
+                    type="submit"
                     className="bg-red-500 text-white px-6 py-2 rounded-md hover:bg-red-600"
-                    onClick={handleSubmitAdd}
                   >
-                    Submit
+                    {isLoading ? 'Loading...' : 'Submit'}
                   </button>
                 </div>
               </form>
@@ -556,86 +551,133 @@ export default function Conference() {
 
           {/* Modal Body */}
           <div className="p-6 space-y-4 overflow-y-auto max-h-[80vh]">
-            <form>
-              <div className="mb-4">
-                <Input
-                  id="conference_name"
-                  type="text"
-                  label="Name"
-                  name="conference_name"
-                  placeholder="Name of Conference"
-                />
-              </div>
+            <form onSubmit={handleSubmitEdit}>
+                  <div className="mb-4">
+                    <InputEdit
+                      id={'name'}
+                      type={'text'}
+                      label={'Name'}
+                      name={'name'}
+                      placeholder={'Name of Conference'}
+                      value={formState.name}
+                      onChange={handleInputChange}
+                    />
+                  </div>
 
-              <div className="mb-4">
-                <Input
-                  id="conference_description"
-                  type="text"
-                  label="Description"
-                  name="conference_description"
-                  placeholder="Description of Conference"
-                />
-              </div>
+                  <div className="mb-4">
+                    <InputEdit
+                      id={'description'}
+                      type={'text'}
+                      label={'Description'}
+                      name={'description'}
+                      placeholder={'Description of Conference'}
+                      value={formState.description}
+                      onChange={handleInputChange}
+                    />
+                  </div>
 
-              <div className="mb-4">
-                <Input
-                  id="conference_venue"
-                  type="text"
-                  label="Venue"
-                  name="conference_venue"
-                  placeholder="Venue of Conference"
-                />
-              </div>
+                  <div className="mb-4">
+                    <InputEdit
+                      id={'venue'}
+                      type={'text'}
+                      label={'Venue'}
+                      name={'venue'}
+                      placeholder={'Venue of Conference'}
+                      value={formState.venue}
+                      onChange={handleInputChange}
+                    />
+                  </div>
 
-              <div className="mb-4">
-                <Input id="conference_date" type="date" label="Date" name="conference_date" />
-              </div>
+                  <div className="mb-4">
+                    <InputEdit
+                      id={'date_start'}
+                      type={'date'}
+                      label={'Date Start'}
+                      name={'date_start'}
+                      value={formState.date_start}
+                      onChange={handleInputChange}
+                    />
+                  </div>
 
-              <div className="mb-4">
-                <Input id="conference_time" type="time" label="Time" name="conference_time" />
-              </div>
+                  <div className="mb-4">
+                    <InputEdit
+                      id={'date_end'}
+                      type={'date'}
+                      label={'Date End'}
+                      name={'date_end'}
+                      value={formState.date_end}
+                      onChange={handleInputChange}
+                    />
+                  </div>
 
-              <div className="mb-4">
-                <Input
-                  id="conference_speaker"
-                  type="text"
-                  label="Speaker"
-                  name="conference_speaker"
-                  placeholder="Speaker of Conference"
-                />
-              </div>
+                  <div className="mb-4">
+                    <InputEdit
+                      id={'time_start'}
+                      type={'time'}
+                      label={'Time Start'}
+                      name={'time_start'}
+                      value={formState.time_start}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                  
+                  <div className="mb-4">
+                    <InputEdit
+                      id={'time_end'}
+                      type={'time'}
+                      label={'Time End'}
+                      name={'time_end'}
+                      value={formState.time_end}
+                      onChange={handleInputChange}
+                    />
+                  </div>
 
-              <div className="mb-4">
-                <Input
-                  id="conference_moderator"
-                  type="text"
-                  label="Moderator"
-                  name="conference_moderator"
-                  placeholder="Moderator of Conference"
-                />
-              </div>
+                  <div className="mb-4">
+                    <InputEdit
+                      id={'speaker'}
+                      type={'text'}
+                      label={'Speaker'}
+                      name={'speaker'}
+                      placeholder={'Speaker of Conference'}
+                      value={formState.speaker}
+                      onChange={handleInputChange}
+                    />
+                  </div>
 
-              <div className="mb-4">
-                <Input
-                  id="conference_table"
-                  type="number"
-                  label="Number of Tables"
-                  name="conference_table"
-                  placeholder="Number of Tables"
-                />
-              </div>
+                  <div className="mb-4">
+                    <InputEdit
+                      id={'moderator'}
+                      type={'text'}
+                      label={'Moderator'}
+                      name={'moderator'}
+                      placeholder={'Moderator of Conference'}
+                      value={formState.moderator}
+                      onChange={handleInputChange}
+                    />
+                  </div>
 
-              {/* Submit Button */}
-              <div className="flex justify-center">
-                <button
-                  type="button"
-                  className="bg-red-500 text-white px-6 py-2 rounded-md hover:bg-red-600"
-                  onClick={handleSubmitEdit}
-                >
-                  Submit
-                </button>
-              </div>
-            </form>
+                  <div className="mb-4">
+                    <InputEdit
+                      id={'sum_table'}
+                      type={'number'}
+                      label={'Number of Tables'}
+                      name={'sum_table'}
+                      placeholder={'Number of Tables'}
+                      value={formState.sum_table}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+
+                  {/* Submit Button */}
+                  <div className="flex justify-center">
+                    <button
+                      type="submit"
+                      className="bg-red-500 text-white px-6 py-2 rounded-md hover:bg-red-600"
+                    >
+                      {isLoading ? 'Loading...' : 'Submit'}
+                    </button>
+                  </div>
+                </form>
           </div>
         </div>
       </div>
