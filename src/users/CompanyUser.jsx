@@ -1,95 +1,131 @@
-import { Upload } from "lucide-react";
-import useFormStore from "./context/useFormStore";
+import Layout from "./components/Layout";
+import FilterSection from "./components/company/FilterSection";
+import SearchBar from "./components/company/SearchBar";
+import CompanyGrid from "./components/company/CompanyGrid";
+import React, { useState } from 'react';
 
-const CompanyForm = ({ onNext }) => {
-    const { 
-        companyName, 
-        representativeName, 
-        address, 
-        companyLogo, 
-        aboutUs, 
-        setCompanyForm 
-    } = useFormStore();
+export default function CompanyUser() {
+  const [showFilters, setShowFilters] = useState(false);
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        setCompanyForm({
-            companyName,
-            representativeName,
-            address,
-            companyLogo,
-            aboutUs,
-        });
-        onNext();
-    };
+  const filterCategories = {
+    "Key Product Line": [
+      'Online/PC Games', 'Parts/accessories', 'Mobile Games',
+      'Art/Music/Design', 'Game Hardware', 'Blockchain',
+      'Console Games', 'Arcade Games', 'E-Sports',
+      'Middleware', 'Software', 'AR/VR'
+    ],
+    "Country": ['Asia', 'Europe', 'North America', 'Middle East'],
+    "Business Type": ['Publisher', 'Developer', 'Both'],
+    "Preferred Platform": ['PC', 'Mobile', 'Console'],
+    "Preferred Genre": ['Action', 'Adventure', 'RPG', 'Strategy']
+  };
 
-    return (
-        <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-                <label className="block text-sm font-medium mb-1">Company Name</label>
-                <input
-                    type="text"
-                    className="w-full p-2 border rounded-lg focus:outline-none focus:ring-1 focus:ring-red-500"
-                    placeholder="Enter company name"
-                    value={companyName}
-                    onChange={(e) => useFormStore.setState({ companyName: e.target.value })}
-                />
-            </div>
+  const [filters, setFilters] = useState(
+    Object.keys(filterCategories).reduce((acc, category) => {
+      acc[category] = [];
+      return acc;
+    }, {})
+  );
 
-            <div>
-                <label className="block text-sm font-medium mb-1">Representative Name</label>
-                <input
-                    type="text"
-                    className="w-full p-2 border rounded-lg focus:outline-none focus:ring-1 focus:ring-red-500"
-                    placeholder="Enter representative name"
-                    value={representativeName}
-                    onChange={(e) => useFormStore.setState({ representativeName: e.target.value })}
-                />
-            </div>
+  const handleSearch = (value) => {
+    console.log('Searching:', value);
+  };
 
-            <div>
-                <label className="block text-sm font-medium mb-1">Address</label>
-                <input
-                    type="text"
-                    className="w-full p-2 border rounded-lg focus:outline-none focus:ring-1 focus:ring-red-500"
-                    placeholder="Your Address"
-                    value={address}
-                    onChange={(e) => useFormStore.setState({ address: e.target.value })}
-                />
-            </div>
+  const handleFilter = (category, item, checked) => {
+    setFilters(prev => ({
+      ...prev,
+      [category]: checked
+        ? [...prev[category], item]
+        : prev[category].filter(i => i !== item)
+    }));
+  };
 
-            <div>
-                <label className="block text-sm font-medium mb-1">Company Logo</label>
-                <div className="border-2 border-dashed border-gray-300 rounded-lg p-2">
-                    <div className="flex justify-center gap-4 items-center">
-                        <Upload className="w-4 h-4 text-red-500" />
-                        <span className="text-red-600">
-                            {companyLogo ? companyLogo : "Upload your logo here"}
-                        </span>
-                    </div>
-                </div>
-            </div>
+  const sampleCompanies = [
+    {
+      logo: "/api/placeholder/100/100",
+      category: "Online/PC Games",
+      name: "Participant Name 1"
+    },
+    {
+      logo: "/api/placeholder/100/100",
+      category: "Mobile Games",
+      name: "Participant Name 2"
+    }
+  ];
+  return (
+    <Layout>
+      <div>
+        {/* Mobile Filter Toggle */}
+        <div className="md:hidden mb-4">
+          <button
+            onClick={() => setShowFilters(!showFilters)}
+            className="bg-white px-4 py-2 rounded-lg shadow-sm flex items-center gap-2"
+          >
+            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16m-7 6h7" />
+            </svg>
+            Filters
+          </button>
+        </div>
 
-            <div>
-                <label className="block text-sm font-medium mb-1">About Us</label>
-                <textarea
-                    className="w-full p-2 border rounded-lg focus:outline-none focus:ring-1 focus:ring-red-500 h-24"
-                    placeholder="Tell us about your company"
-                    value={aboutUs}
-                    onChange={(e) => useFormStore.setState({ aboutUs: e.target.value })}
-                />
-            </div>
-
-            <div className="pt-4">
+        <div className="flex flex-col md:flex-row  gap-4 md:gap-8">
+          {/* Sidebar Filters */}
+          <aside className={`
+          ${showFilters ? 'block' : 'hidden'}
+          md:block
+          w-full md:w-64 flex-shrink-0
+          fixed md:relative
+          top-0 left-0
+          h-full md:h-auto
+          shadow-md
+          z-50 md:z-0
+          bg-white md:bg-transparent
+          p-4 md:p-0
+          overflow-y-auto
+        `}>
+            <div className="bg-white rounded-lg  p-4 md:p-6 ">
+              <div className="flex justify-between  items-center mb-4 md:mb-6">
+                <h2 className="font-semibold">FILTER</h2>
                 <button
-                    type="submit"
-                    className="w-full bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 transition-colors"
+                  className="text-red-600 md:hidden"
+                  onClick={() => setShowFilters(false)}
                 >
-                    Next
+                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
                 </button>
+              </div>
+              {Object.entries(filterCategories).map(([category, items]) => (
+                <FilterSection
+                  key={category}
+                  title={category}
+                  items={items}
+                  onChange={(item, checked) => handleFilter(category, item, checked)}
+                />
+              ))}
             </div>
-        </form>
-    );
-};
+          </aside>
 
-export default CompanyForm;
+          {/* Main Content */}
+          <main className="flex-1">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 md:mb-8">
+              <h1 className="text-xl md:text-2xl font-semibold">
+                Company <span className="text-gray-500 text-base md:text-lg">Total 54 Company</span>
+              </h1>
+              <SearchBar onSearch={handleSearch} />
+            </div>
+            <CompanyGrid companies={sampleCompanies} />
+          </main>
+        </div>
+
+        {/* Overlay for mobile filters */}
+        {showFilters && (
+          <div
+            className="fixed inset-0 bg-black bg-opacity-50 md:hidden"
+            onClick={() => setShowFilters(false)}
+          />
+        )}
+      </div>
+    </Layout>
+  )
+}
