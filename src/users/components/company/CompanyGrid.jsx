@@ -7,9 +7,14 @@ const CompanyGrid = ({ companies }) => {
       {companies.map((company, index) => (
         <CompanyCard
           key={index}
-          logo={company.logo}
-          category={company.category}
-          name={company.name}
+          onRedirect={() => window.location.href = `/u/companies/${company.id}`}
+          logo={company.company_logo}
+          category={
+            company.key_product_line && company.key_product_line.length > 0
+              ? company.key_product_line[0].name
+              : company.company_type
+          }
+          name={company.company_name}
         />
       ))}
     </div>

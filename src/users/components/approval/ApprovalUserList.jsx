@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { X, Check } from 'lucide-react';
 import AlertDialog from '../AlertDialog';
+import api from "../../../utils/api"
 
 const TableCell = ({ children, className }) => (
     <td className={`px-4 py-3 text-xs ${className} whitespace-nowrap border-b border-r border-gray-300`}>
@@ -63,6 +64,19 @@ export default function ApprovalUserList() {
     };
 
     const renderLogo = (company) => {
+        async function getData() {
+            try {
+                const res = await api.get("/matchmakings/bycompany-book")
+                console.log(res.data)
+            } catch (error) {
+                console.log(error)
+            }
+        }
+    
+        useEffect(()=>{
+            getData()
+        },[])
+
         return company === 'Company A' ? (
             <div className="bg-gray-800 rounded-full w-8 h-8 flex items-center justify-center">
                 <span className="text-white text-sm">A</span>

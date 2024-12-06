@@ -49,6 +49,7 @@ const LogoutModal = ({ isOpen, onClose, onConfirm }) => {
 };
 
 export default function Navbar() {
+  const username = localStorage.getItem('username')
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
@@ -84,10 +85,10 @@ export default function Navbar() {
   };
 
   const confirmLogout = () => {
-    // Implement logout logic here
-    console.log('Logging out...');
     setShowLogoutModal(false);
-    // Add your logout logic (e.g., clear tokens, redirect)
+    localStorage.removeItem("token");
+    localStorage.removeItem("username");
+    window.location.href = "/";
   };
 
   const currentPath = window.location.pathname;
@@ -120,7 +121,7 @@ export default function Navbar() {
               <div className="rounded-full bg-gray-100 p-1.5">
                 <User className="w-5 h-5" />
               </div>
-              <span>John Doe</span>
+              <span>{username}</span>
             </button>
             {showUserMenu && <UserMenu onLogout={handleLogout} />}
           </div>
@@ -138,7 +139,7 @@ export default function Navbar() {
 
       {/* Mobile Menu */}
       {isMenuOpen && (
-        <div className="md:hidden absolute top-full left-0 right-0 bg-white shadow-lg z-50">
+        <div className="md:hidden absolute  top-full left-0 right-0 bg-white shadow-lg z-50">
           <div className="flex flex-col py-2">
             {link.map((nav, index) => {
               const isActive = currentPath === nav.link;

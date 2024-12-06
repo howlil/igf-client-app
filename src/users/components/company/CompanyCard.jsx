@@ -1,9 +1,11 @@
 import React from 'react';
 import vite from "../../../../public/vite.svg"
 
-const CompanyCard = ({ logo, category, name }) => {
+const CompanyCard = ({ onRedirect,logo, category, name }) => {
   return (
-    <div className="bg-white rounded-lg p-4 md:p-6 shadow-md">
+    <div
+    onClick={onRedirect}
+    className="bg-white cursor-pointer rounded-lg p-4 md:p-6 shadow-md">
       <div className="bg-red-100 text-red-600 text-xs md:text-sm px-2 md:px-3 py-1 rounded-full inline-block mb-3 md:mb-4">
         {category}
       </div>

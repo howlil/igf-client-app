@@ -1,4 +1,6 @@
 import React from 'react';
+import api from "../../../utils/api"
+import { useEffect } from 'react';
 
 const TableCell = ({ children, className }) => (
     <td className={`px-4 py-3 text-xs ${className} whitespace-nowrap border-b border-r border-gray-300`}>
@@ -44,6 +46,20 @@ const TableHeader = ({ columns }) => (
 );
 
 export default function NotApprovalUser() {
+
+    async function getData() {
+        try {
+            const res = await api.get("/matchmakings/bycompany-match")
+            console.log(res.data)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    useEffect(()=>{
+        getData()
+    },[])
+
     const data = [
         { id: '01', time: '13:00 - 14:00', company: 'Company A', logo: 'A', productLine: 'Online/PC Games', country: 'Asia', platform: 'PC', status: 'Approved' },
         { id: '02', time: '14:30 - 15:00', company: 'Company B', logo: 'B', productLine: 'Console Games', country: 'Middle East', platform: 'Console', status: 'Waiting for approval' },
