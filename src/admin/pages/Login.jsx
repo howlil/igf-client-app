@@ -1,8 +1,32 @@
 import Input from "../components/input";
 import InputPassword from "../components/InputPassword";
 import Button from "../components/Button";
+import { useState } from "react";
+import api from '../../utils/api'
 
 export default function Login() {
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [isLoading, setLoading] = useState(false)
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    setLoading(true)
+    console.log('berhasil')
+    try {
+      const formData = new FormData();
+      formData.append('email', email);
+      formData.append('password', password);
+
+      const response = await api.post('/login', formData);
+      if (response.success) {
+        localStorage.setItem('token', response.data.token)
+      }
+
+    } catch (error) {
+      console.error(error)
+    }
+  }
     return (
       <>
         <section className="flex flex-col md:flex-row items-center justify-center min-h-screen bg-bg-login bg-center bg-cover">
@@ -18,12 +42,12 @@ export default function Login() {
             <div className="md:w-6/12 md:px-10">
                 <div className="bg-white p-8 rounded-xl shadow-lg ">
                 <p className="font-semibold mb-4 text-center text-lg md:text-xl tracking-[.40em]">LOGIN</p>
-                <form>
+                <form onSubmit={handleSubmit}>
                     <div className="mb-4">
-                    <Input id={'email'} type={'email'} label={'E-Mail'} name={'email'} placeholder={'E-Mail'} />
+                    <Input id={'email'} type={'email'} label={'E-Mail'} name={'email'} placeholder={'E-Mail'} onChange={(e) => setEmail(e.target.value)}/>
                     </div>
                     <div className="mb-6">
-                    <InputPassword disabled={false} label={'Password'} name={'password'} placeholder={'Password'} />
+                    <InputPassword disabled={false} label={'Password'} name={'password'} placeholder={'Password'} onChange={(e) => setPassword(e.target.value)}/>
                     </div>
                     <div className="text-right pb-4 flex justify-center">
                     <Button label={'Login'} type={'submit'} disabled={false} className={'w-full md:w-fit py-2 px-5 bg-red text-white rounded-md hover:bg-gray'} />
