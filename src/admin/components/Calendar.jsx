@@ -1,17 +1,54 @@
-import React, { useState } from "react";
+import api from "../../utils/api";
+import React, { useState, useEffect } from "react";
 
 export default function ConferenceDashboard() {
-  const [selectedConference, setSelectedConference] = useState(null);
   const [showCalendar, setShowCalendar] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split("T")[0]);
   const [currentDate, setCurrentDate] = useState(new Date().toISOString().split("T")[0]);
   const [showDateDropdown, setShowDateDropdown] = useState(false);
   const [startTable, setStartTable] = useState(0);
-  const [endTable, setEndTable] = useState(6); // Initially show tables 1-6
+  const [endTable, setEndTable] = useState(8);
+  const [dataDash, setData] = useState([])
+  const [isLoading, setLoading] = useState(false)
 
+  const fetchDash = async () => {
+    try {
+      setLoading(true)
+      const response = await api.get('/dashboard-meja')
+
+      const formattedData = response.data.data.map((item, index) => ({
+        no: String(index + 1).padStart(2, "0"),
+        conference_name: item.company_book.company_name,  // Nama konferensi berdasarkan company_name
+        id_conference: item.company_id_book,  // ID konferensi
+        sum_table: String(1),  // Asumsi bahwa setiap item hanya mengacu pada 1 meja
+        time_start: item.time_start,
+        time_end: item.time_end,
+        bookings: [
+          {
+            date: item.table.date,
+            time_start: item.time_start,
+            time_end: item.time_end,
+            table: item.table.name_table,  // Nama meja yang digunakan
+            company: [
+              item.company_book.company_name,  // Nama perusahaan yang memesan
+              item.company_match.company_name  // Nama perusahaan yang sesuai
+            ]
+          }
+        ]
+      }));
+      
+      console.log(formattedData);
+      
+    } catch (error) {
+      console.error(error)
+    } finally {
+      setLoading(false)
+    }
+  }
   const data = [
     {
       conference_name: "Conference A",
+      id_conference: 1,
       sum_table: 10,
       time_start: "10:00",
       time_end: "15:00",
@@ -24,37 +61,77 @@ export default function ConferenceDashboard() {
           company: ["Company A", "Company B"],
         },
         {
-          date: "2024-12-03",
+          date: "2024-12-01",
+          time_start: "10:00",
+          time_end: "11:00",
+          table: "Table 2",
+          company: ["Company A", "Company B"],
+        },
+        {
+          date: "2024-12-01",
           time_start: "12:00",
           time_end: "13:00",
-          table: "Table 2",
+          table: "Table 3",
           company: ["Company A", "Company C"],
         },
-      ],
+        {
+          date: "2024-12-01",
+          time_start: "12:00",
+          time_end: "13:00",
+          table: "Table 4",
+          company: ["Company A", "Company C"],
+        },
+        {
+          date: "2024-12-01",
+          time_start: "12:00",
+          time_end: "13:00",
+          table: "Table 5",
+          company: ["Company A", "Company C"],
+        },
+        {
+          date: "2024-12-01",
+          time_start: "12:00",
+          time_end: "13:00",
+          table: "Table 6",
+          company: ["Company A", "Company C"],
+        },
+        {
+          date: "2024-12-07",
+          time_start: "12:00",
+          time_end: "13:00",
+          table: "Table 6",
+          company: ["Company A", "Company C"],
+        },
+      ],  
     },
     {
       conference_name: "Conference B",
+      id_conference: 2,
       sum_table: 5,
       time_start: "08:00",
       time_end: "12:00",
       bookings: [
         {
-          date: "2024-12-02",
-          time_start: "09:00",
-          time_end: "10:00",
-          table: "Table 3",
-          company: ["Company D", "Company E"],
+          date: "2024-12-01",
+          time_start: "10:00",
+          time_end: "11:00",
+          table: "Table 1",
+          company: ["Company A", "Company B"],
+        },
+        {
+          date: "2024-12-01",
+          time_start: "10:00",
+          time_end: "11:00",
+          table: "Table 2",
+          company: ["Company A", "Company B"],
         },
       ],
     },
   ];
 
-  const handleConferenceChange = (event) => {
-    const selectedConf = data.find(conf => conf.conference_name === event.target.value);
-    setSelectedConference(selectedConf);  // Memperbarui state selectedConference
-  };
-  
-  const conference = selectedConference || data[0]; 
+  const [selectedConference, setSelectedConference] = useState(data[0]);
+
+  const conference = selectedConference;
   const { sum_table, time_start, time_end, bookings } = conference;
 
   const tables = Array.from({ length: sum_table }, (_, i) => `Table ${i + 1}`);
@@ -64,8 +141,12 @@ export default function ConferenceDashboard() {
     return Array.from({ length: endHour - startHour + 1 }, (_, i) => `${startHour + i}:00`);
   };
 
-  const filteredBookings = bookings.filter((booking) => booking.date === selectedDate);
-  console.log(filteredBookings)
+  // Move filteredBookings calculation inside useEffect to make it reactive
+  const [filteredBookings, setFilteredBookings] = useState([]);
+
+  useEffect(() => {
+    setFilteredBookings(bookings.filter((booking) => booking.date === selectedDate));
+  }, [bookings, selectedDate]); // Recalculate filteredBookings when bookings or selectedDate changes
 
   const handleTodayClick = () => {
     setSelectedDate(currentDate);
@@ -90,7 +171,7 @@ export default function ConferenceDashboard() {
     }
   };
 
-  
+  console.log(filteredBookings)
 
   return (
     <div className="p-4 bg-white h-screen">
@@ -123,10 +204,10 @@ export default function ConferenceDashboard() {
                     onClick={() => {
                       setSelectedConference(conf);
                       setShowCalendar(false);
-                      setSelectedDate("");
+                      setSelectedDate(""); // Reset the selected date
                     }}
                   >
-                    {conf.conference_name}
+                    {conf.conference_name} 
                   </div>
                 ))}
               </div>
@@ -194,18 +275,15 @@ export default function ConferenceDashboard() {
                 &gt;
               </button>
             </div>
-            </div>
-            
-
+          </div>
         </div>
       </div>
-
 
       {selectedConference && (
         <div className="relative overflow-x-auto">
           <div className="relative">
             <div className="w-full">
-              <table className="w-full border-collapse">
+              <table className="w-full border-collapse overflow-x-auto">
                 <thead>
                   <tr>
                     <th className="border border-t-0 border-s-0 border-gray-200 px-6 py-6 text-lg">
@@ -236,17 +314,19 @@ export default function ConferenceDashboard() {
                             b.time_start === time
                         );
 
+                        console.log(booking)
+
                         return (
                           <td
                             key={`${time}-${table}`}
-                            className="border border-gray-300 px-8 py-8 "
+                            className="border border-gray-300 px-4 py-4"
                           >
                             {booking && (
-                              <div className="bg-gray-100 p-6 w-fit rounded-lg shadow-md">
-                                <p className="text-base sm:text-lg lg:text-xl font-medium">
+                              <div className="bg-gray-100 p-2 max-w-xs w-fit rounded-lg shadow-md">
+                                <p className="text-xs sm:text-sm lg:text-base font-medium">
                                   {booking.time_start} - {booking.time_end}
                                 </p>
-                                <p className="text-sm sm:text-base lg:text-lg text-gray-600">
+                                <p className="text-xs text-gray-600">
                                   {booking.company.join(", ")}
                                 </p>
                               </div>
@@ -296,7 +376,6 @@ export default function ConferenceDashboard() {
           </div>
         </div>
       )}
-
     </div>
   );
 }
