@@ -17,13 +17,10 @@ const CompanyForm = ({ onNext }) => {
     const handleFileChange = (e) => {
         const file = e.target.files[0];
         if (file) {
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                setField("company_logo", event.target.result);
-            };
-            reader.readAsDataURL(file);
+            setField("company_logo", file);
         }
     };
+
 
     return (
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -69,15 +66,7 @@ const CompanyForm = ({ onNext }) => {
                         onChange={handleFileChange}
                         className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:bg-red-50 file:text-red-600 hover:file:bg-red-100"
                     />
-                    {companyLogo && (
-                        <div className="mt-2">
-                            <img
-                                src={companyLogo}
-                                alt="Company Logo"
-                                className="h-20 w-auto border rounded-lg"
-                            />
-                        </div>
-                    )}
+                   
                 </div>
             </div>
 
