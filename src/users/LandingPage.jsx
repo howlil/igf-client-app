@@ -17,7 +17,7 @@ export default function LandingPage() {
 
   const fetchConf = async () => {
     try {
-      const response = await api.get("/list-conferences");
+      const response = await api.get("/list-conference");
 
       const formattedData = response.data.data.map((item) => ({
         name: item.name,
