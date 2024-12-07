@@ -12,7 +12,7 @@ const ParticipantProfile = ({ company }) => {
           <div className="aspect-square bg-gray-100 rounded-lg relative">
             {company.company_logo ? (
               <img
-                src={company.company_logo}
+                src={`${import.meta.env.VITE_API_URL}/company.company_logo`}
                 alt={company.company_name}
                 className="w-full h-full object-cover rounded-lg"
               />
