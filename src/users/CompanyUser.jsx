@@ -4,13 +4,18 @@ import SearchBar from "./components/company/SearchBar";
 import CompanyGrid from "./components/company/CompanyGrid";
 import React, { useState, useEffect } from "react";
 import api from "../utils/api";
-import Swal from "sweetalert2";
 
 export default function CompanyUser() {
   const [showFilters, setShowFilters] = useState(false);
-  const [companies, setCompanies] = useState([]); // State for storing companies
-  const [filteredCompanies, setFilteredCompanies] = useState([]); // State for filtered companies
-  const [filters, setFilters] = useState({});
+  const [companies, setCompanies] = useState([]);
+  const [filteredCompanies, setFilteredCompanies] = useState([]);
+  const [filters, setFilters] = useState({
+    "Key Product Line": [],
+    "Country": [],
+    "Business Type": [],
+    "Preferred Platform": [],
+    "Preferred Genre": []
+  });
   const [searchTerm, setSearchTerm] = useState("");
 
   const filterCategories = {
@@ -39,8 +44,8 @@ export default function CompanyUser() {
     try {
       const res = await api.get("/companys-by-conference");
       if (res.data && Array.isArray(res.data.data)) {
-        setCompanies(res.data.data); 
-        setFilteredCompanies(res.data.data); // Initialize filtered data with the same array
+        setCompanies(res.data.data);
+        setFilteredCompanies(res.data.data);
       } else {
         console.error("Unexpected API response:", res.data);
         setCompanies([]);
@@ -55,23 +60,29 @@ export default function CompanyUser() {
 
   // Apply filters and search
   useEffect(() => {
-    let filtered = companies;
+    let filtered = [...companies];
 
     // Apply filters
     Object.entries(filters).forEach(([category, selectedItems]) => {
       if (selectedItems.length > 0) {
-        filtered = filtered.filter((company) =>
-          company[category.toLowerCase().replace(" ", "_")]?.some((item) =>
-            selectedItems.includes(item.name)
-          )
-        );
+        filtered = filtered.filter((company) => {
+          const categoryKey = category.toLowerCase().replace(/\s+/g, "_");
+          const companyItems = company[categoryKey] || [];
+          
+          // Check if any of the company's items for this category match the selected filters
+          return selectedItems.some(selectedItem =>
+            companyItems.some(companyItem => 
+              companyItem.name.toLowerCase() === selectedItem.toLowerCase()
+            )
+          );
+        });
       }
     });
 
     // Apply search term
-    if (searchTerm) {
+    if (searchTerm.trim()) {
       filtered = filtered.filter((company) =>
-        company.company_name?.toLowerCase().includes(searchTerm.toLowerCase())
+        company.company_name?.toLowerCase().includes(searchTerm.toLowerCase().trim())
       );
     }
 
@@ -85,11 +96,11 @@ export default function CompanyUser() {
 
   // Handle filter changes
   const handleFilter = (category, item, checked) => {
-    setFilters((prev) => ({
+    setFilters(prev => ({
       ...prev,
       [category]: checked
         ? [...(prev[category] || []), item]
-        : (prev[category] || []).filter((i) => i !== item),
+        : (prev[category] || []).filter(i => i !== item)
     }));
   };
 
@@ -97,7 +108,6 @@ export default function CompanyUser() {
   const handleSearch = (value) => {
     setSearchTerm(value);
   };
-  console.log(companies)
 
   return (
     <Layout>
@@ -159,9 +169,7 @@ export default function CompanyUser() {
                   key={category}
                   title={category}
                   items={items}
-                  onChange={(item, checked) =>
-                    handleFilter(category, item, checked)
-                  }
+                  onChange={(item, checked) => handleFilter(category, item, checked)}
                 />
               ))}
             </div>
@@ -178,7 +186,7 @@ export default function CompanyUser() {
               </h1>
               <SearchBar onSearch={handleSearch} />
             </div>
-            <CompanyGrid companies={companies} />
+            <CompanyGrid companies={filteredCompanies} />
           </main>
         </div>
 
