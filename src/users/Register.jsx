@@ -22,9 +22,10 @@ export default function Register() {
   
 
   useEffect(() => {
-    const id = getQueryParameter("id") || "1"; 
+    const id = getQueryParameter("id"); 
     setField("conference_id", id); 
   }, [setField]);
+
 
   const handleSubmit = async () => {
     try {
