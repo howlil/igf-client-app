@@ -83,7 +83,7 @@ export default function Login() {
                     <div className="text-right pb-4 flex justify-center">
                     <Button label={isLoading ? 'Loading...' : 'Login'} type={'submit'} disabled={false} className={'w-full md:w-fit py-2 px-5 bg-red text-white rounded-md hover:bg-gray'} />
                     </div>
-                    <p className="text-gray-600 text-sm text-center">Don't have any account? <span className="text-red underline underline-offset-1"><a href="">Register Here</a></span></p>
+                    <p className="text-gray-600 text-sm text-center">Don't have any account? <span className="text-red underline underline-offset-1"><a href="/">Register Here</a></span></p>
                 </form>
                 </div>
             </div>
