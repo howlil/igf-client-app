@@ -5,12 +5,6 @@ import Approval from './admin/pages/Approval/Approval';
 import Conference from './admin/pages/Conference/Conference';
 import Company from './admin/pages/Company/Company';
 import NotFound from './NotFound';
-import LandingPage from './users/LandingPage';
-import CompanyUser from './users/CompanyUser';
-import ApprovalUser from './users/ApprovalUser';
-import Register from './users/Register';
-import DetailCompany from './users/components/company/DetailCompany';
-import ScheduleUser from './users/ScheduleUser';
 import NotAllowed from './NotAllowed';
 
 function App() {
@@ -20,7 +14,6 @@ function App() {
       <Routes>
         <Route path='/*' element={<NotFound/>}/>
         <Route path='/notAllowed' element={<NotAllowed/>}/>
-        <Route path='/' element={<LandingPage/>}/>
         <Route path='/login' element={<Login/>}/>
         <Route path='/register' element={<Register/>}/>
         <Route path='/u/approval' element={<ApprovalUser/>}/>
