@@ -40,7 +40,7 @@ export default function CompanyUser() {
       const res = await api.get("/companys-by-conference");
       if (res.data && Array.isArray(res.data.data)) {
         setCompanies(res.data.data); 
-        setFilteredCompanies(res.data.data); 
+        setFilteredCompanies(res.data.data); // Initialize filtered data with the same array
       } else {
         console.error("Unexpected API response:", res.data);
         setCompanies([]);

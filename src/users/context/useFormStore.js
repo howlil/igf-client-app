@@ -1,8 +1,9 @@
 import { create } from "zustand";
 
+
 const useFormStore = create((set, get) => ({
   // State for AccountForm
-  conference_id: "1",
+  conference_id:"1", // Default to "1" if "id" is not present
   email: "",
   password: "",
   confirm_password: "",
@@ -60,7 +61,6 @@ const useFormStore = create((set, get) => ({
   // Action to submit form data to API
   submitForm: async () => {
     const state = get(); // Access the current state
-
     // Combine all form data
     const formData = new FormData();
     formData.append("conference_id", state.conference_id);
@@ -112,9 +112,7 @@ const useFormStore = create((set, get) => ({
         key_product_lines: [],
         schedules: [],
       }));
-      return result
-
- 
+      return result;
     } catch (error) {
       console.error("Failed to submit form:", error);
       alert("Failed to submit form. Please try again.");

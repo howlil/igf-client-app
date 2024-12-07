@@ -3,17 +3,29 @@ import CompanyForm from "./components/register/CompanyForm";
 import ClassificationForm from "./components/register/ClassificationForm";
 import ScheduleForm from "./components/register/ScheduleForm";
 import StepProgress from "./components/register/StepProgress";
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import useFormStore from "./context/useFormStore";
 import Swal from "sweetalert2";
 
 export default function Register() {
   const [currentStep, setCurrentStep] = useState(1);
   const submitForm = useFormStore((state) => state.submitForm);
+  const setField = useFormStore((state) => state.setField);
 
   const handleNext = () => {
     setCurrentStep((prev) => prev + 1);
   };
+  const getQueryParameter = (key) => {
+    const params = new URLSearchParams(window.location.search);
+    return params.get(key);
+  };
+  
+
+  useEffect(() => {
+    const id = getQueryParameter("id") || "1"; 
+    setField("conference_id", id); 
+  }, [setField]);
+
 
   const handleSubmit = async () => {
     try {
