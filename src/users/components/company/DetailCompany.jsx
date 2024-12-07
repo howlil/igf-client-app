@@ -12,7 +12,7 @@ const ParticipantProfile = ({ company }) => {
           <div className="aspect-square bg-gray-100 rounded-lg relative">
             {company.company_logo ? (
               <img
-                src={`${import.meta.env.VITE_API_URL}/company.company_logo`}
+                src={`${import.meta.env.VITE_API_URL}/${company.company_logo}`}
                 alt={company.company_name}
                 className="w-full h-full object-cover rounded-lg"
               />
@@ -23,7 +23,7 @@ const ParticipantProfile = ({ company }) => {
                 className="w-full h-full object-cover rounded-lg"
               />
             )}
-            <span className="absolute top-2 right-2 bg-gray-800 text-white text-xs px-2 py-1 rounded">
+            <span className="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded">
               {company.company_type}
             </span>
           </div>

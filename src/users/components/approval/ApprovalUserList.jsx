@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, Check } from 'lucide-react';
 import AlertDialog from '../AlertDialog';
 import api from "../../../utils/api"
@@ -9,33 +9,58 @@ const TableCell = ({ children, className }) => (
     </td>
 );
 
-
-
 export default function ApprovalUserList() {
     const [selectedAction, setSelectedAction] = useState(null);
     const [selectedRow, setSelectedRow] = useState(null);
+    const [matchmakings, setMatchmakings] = useState([]);
 
-    const data = [
-        { id: '01', time: '13:00 - 14:00', company: 'Company A', productLine: 'Online/PC Games', country: 'Asia', platform: 'PC', status: 'Approved' },
-        { id: '02', time: '14:30 - 15:00', company: 'Company B', productLine: 'Console Games', country: 'Middle East', platform: 'Console', status: 'Rejected' },
-        { id: '03', time: '14:30 - 15:00', company: 'Company B', productLine: 'Console Games', country: 'Middle East', platform: 'Console', status: 'Rejected' },
-        { id: '04', time: '13:00 - 14:00', company: 'Company A', productLine: 'Online/PC Games', country: 'Asia', platform: 'PC', status: 'pending' },
-        { id: '05', time: '14:30 - 15:00', company: 'Company B', productLine: 'Console Games', country: 'Middle East', platform: 'Console', status: 'pending' },
-    ];
+    async function getData() {
+        try {
+            const res = await api.get("/matchmakings/bycompany-book");
+            console.log(res.data.data)
+            setMatchmakings(res.data.data);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    useEffect(() => {
+        getData();
+    }, []);
 
     const handleAction = (action, row) => {
+        console.log(row.company_id_match)
         setSelectedAction(action);
         setSelectedRow(row);
     };
 
-    const handleConfirm = () => {
-        console.log(`Confirmed ${selectedAction} for row:`, selectedRow);
-        // Handle the action here
-        setSelectedAction(null);
-        setSelectedRow(null);
+    const handleConfirm = async () => {
+        try {
+            const formData = new FormData();
+            formData.append('approved_company', selectedAction === 'approve' ? 1 : 0);
+
+            await api.post(`/matchmaking-approval/${selectedRow.id}`, formData);
+            
+            getData();
+            
+            // Reset states
+            setSelectedAction(null);
+            setSelectedRow(null);
+        } catch (error) {
+            console.error('Error updating status:', error);
+            // You might want to show an error message to the user here
+        }
     };
 
-    const renderStatus = (status, row) => {
+    const getApprovalStatus = (approvedCompany) => {
+        if (approvedCompany === 1) return 'Approved';
+        if (approvedCompany === 0) return 'Rejected';
+        return 'pending';
+    };
+
+    const renderStatus = (row) => {
+        const status = getApprovalStatus(row.approved_company);
+        
         switch (status) {
             case 'Approved':
                 return <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">Approved</span>;
@@ -64,26 +89,10 @@ export default function ApprovalUserList() {
     };
 
     const renderLogo = (company) => {
-        async function getData() {
-            try {
-                const res = await api.get("/matchmakings/bycompany-book")
-                console.log(res.data)
-            } catch (error) {
-                console.log(error)
-            }
-        }
-    
-        useEffect(()=>{
-            getData()
-        },[])
-
-        return company === 'Company A' ? (
-            <div className="bg-gray-800 rounded-full w-8 h-8 flex items-center justify-center">
-                <span className="text-white text-sm">A</span>
-            </div>
-        ) : (
+        const initial = company.charAt(0).toUpperCase();
+        return (
             <div className="bg-gradient-to-br from-purple-500 to-blue-500 rounded-full w-8 h-8 flex items-center justify-center">
-                <span className="text-white text-sm">B</span>
+                <span className="text-white text-sm">{initial}</span>
             </div>
         );
     };
@@ -93,7 +102,7 @@ export default function ApprovalUserList() {
             <table className="w-full border-collapse table-auto">
                 <thead className="bg-red-500">
                     <tr>
-                        {['No', 'Time', 'Company', 'Key Product Line', 'Country', 'Platform', 'Actions'].map((header, index) => (
+                        {['No', 'Time', 'Company', 'Table', 'Date', 'Status'].map((header, index) => (
                             <th key={index} className="px-4 py-3 text-left text-xs font-medium text-white whitespace-nowrap border-b border-r border-gray-300">
                                 {header}
                             </th>
@@ -101,20 +110,21 @@ export default function ApprovalUserList() {
                     </tr>
                 </thead>
                 <tbody>
-                    {data.map((row, index) => (
+                    {matchmakings.map((row, index) => (
                         <tr key={row.id} className={`${index % 2 === 1 ? 'bg-red-50' : 'bg-white'} hover:bg-gray-50`}>
-                            <TableCell className="font-medium text-gray-900">{row.id}</TableCell>
-                            <TableCell className="text-gray-800">{row.time}</TableCell>
+                            <TableCell className="font-medium text-gray-900">{index +1}</TableCell>
+                            <TableCell className="text-gray-800">
+                                {row.time_start} - {row.time_end}
+                            </TableCell>
                             <TableCell className="text-gray-800">
                                 <div className="flex items-center gap-2">
-                                    {renderLogo(row.company)}
-                                    <span>{row.company}</span>
+                                    {renderLogo(row.company_match.company_name)}
+                                    <span>{row.company_match.company_name}</span>
                                 </div>
                             </TableCell>
-                            <TableCell className="text-gray-800">{row.productLine}</TableCell>
-                            <TableCell className="text-gray-800">{row.country}</TableCell>
-                            <TableCell className="text-gray-800">{row.platform}</TableCell>
-                            <TableCell className="text-gray-800">{renderStatus(row.status, row)}</TableCell>
+                            <TableCell className="text-gray-800">{row.table.name_table}</TableCell>
+                            <TableCell className="text-gray-800">{row.table.date}</TableCell>
+                            <TableCell className="text-gray-800">{renderStatus(row)}</TableCell>
                         </tr>
                     ))}
                 </tbody>

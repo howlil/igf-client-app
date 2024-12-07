@@ -1,6 +1,5 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import api from "../../../utils/api"
-import { useEffect } from 'react';
 
 const TableCell = ({ children, className }) => (
     <td className={`px-4 py-3 text-xs ${className} whitespace-nowrap border-b border-r border-gray-300`}>
@@ -8,26 +7,36 @@ const TableCell = ({ children, className }) => (
     </td>
 );
 
-const TableRow = ({ row, index, getLogo, getStatusColor }) => (
-    <tr className={`${index % 2 === 1 ? 'bg-red-50' : 'bg-white'} hover:bg-gray-50`}>
-        <TableCell className="font-medium text-gray-900">{row.id}</TableCell>
-        <TableCell className="text-gray-800">{row.time}</TableCell>
-        <TableCell className="text-gray-800">
-            <div className="flex items-center gap-2">
-                {getLogo(row.company)}
-                <span>{row.company}</span>
-            </div>
-        </TableCell>
-        <TableCell className="text-gray-800">{row.productLine}</TableCell>
-        <TableCell className="text-gray-800">{row.country}</TableCell>
-        <TableCell className="text-gray-800">{row.platform}</TableCell>
-        <TableCell>
-            <span className={`px-2 py-1 rounded-full text-xs ${getStatusColor(row.status)}`}>
-                {row.status}
-            </span>
-        </TableCell>
-    </tr>
-);
+const TableRow = ({ row, index, getLogo, getStatusColor }) => {
+    const getApprovalStatus = (approvedCompany, approvedAdmin) => {
+        if (approvedCompany === 1) return 'Approved';
+        if (approvedCompany === 0) return 'Rejected';
+        return 'Waiting for approval';
+    };
+
+    return (
+        <tr className={`${index % 2 === 1 ? 'bg-red-50' : 'bg-white'} hover:bg-gray-50`}>
+            <TableCell className="font-medium text-gray-900">{row.id}</TableCell>
+            <TableCell className="text-gray-800">
+                {row.time_start} - {row.time_end}
+            </TableCell>
+            <TableCell className="text-gray-800">
+                <div className="flex items-center gap-2">
+                    {getLogo(row.company_book.company_name)}
+                    <span>{row.company_book.company_name}</span>
+                </div>
+            </TableCell>
+            <TableCell className="text-gray-800">{row.table.name_table}</TableCell>
+            <TableCell className="text-gray-800">{row.table.date}</TableCell>
+            <TableCell className="text-gray-800">-</TableCell>
+            <TableCell>
+                <span className={`px-2 py-1 rounded-full text-xs ${getStatusColor(getApprovalStatus(row.approved_company, row.approved_admin))}`}>
+                    {getApprovalStatus(row.approved_company, row.approved_admin)}
+                </span>
+            </TableCell>
+        </tr>
+    );
+};
 
 const TableHeader = ({ columns }) => (
     <thead className="bg-red-500">
@@ -46,29 +55,20 @@ const TableHeader = ({ columns }) => (
 );
 
 export default function NotApprovalUser() {
+    const [matchmakings, setMatchmakings] = useState([]);
 
     async function getData() {
         try {
-            const res = await api.get("/matchmakings/bycompany-match")
-            console.log(res.data)
+            const res = await api.get("/matchmakings/bycompany-match");
+            setMatchmakings(res.data.data);
         } catch (error) {
-            console.log(error)
+            console.log(error);
         }
     }
 
-    useEffect(()=>{
-        getData()
-    },[])
-
-    const data = [
-        { id: '01', time: '13:00 - 14:00', company: 'Company A', logo: 'A', productLine: 'Online/PC Games', country: 'Asia', platform: 'PC', status: 'Approved' },
-        { id: '02', time: '14:30 - 15:00', company: 'Company B', logo: 'B', productLine: 'Console Games', country: 'Middle East', platform: 'Console', status: 'Waiting for approval' },
-        { id: '03', time: '14:30 - 15:00', company: 'Company B', logo: 'B', productLine: 'Console Games', country: 'Middle East', platform: 'Console', status: 'Rejected' },
-        { id: '04', time: '13:00 - 14:00', company: 'Company A', logo: 'A', productLine: 'Online/PC Games', country: 'Asia', platform: 'PC', status: 'Approved' },
-        { id: '05', time: '14:30 - 15:00', company: 'Company B', logo: 'B', productLine: 'Console Games', country: 'Middle East', platform: 'Console', status: 'Rejected' },
-        { id: '06', time: '14:30 - 15:00', company: 'Company B', logo: 'B', productLine: 'Console Games', country: 'Middle East', platform: 'Console', status: 'Waiting for approval' },
-        { id: '07', time: '14:30 - 15:00', company: 'Company B', logo: 'B', productLine: 'Console Games', country: 'Middle East', platform: 'Console', status: 'Waiting for approval' },
-    ];
+    useEffect(() => {
+        getData();
+    }, []);
 
     const getStatusColor = (status) => {
         switch (status) {
@@ -81,20 +81,23 @@ export default function NotApprovalUser() {
         }
     };
 
-    const getLogo = (company) => {
-        return company === 'Company A' ? (
+    const getLogo = (companyName) => {
+        const initial = companyName.charAt(0).toUpperCase();
+        const isCompanyA = companyName.includes('Company A');
+        
+        return isCompanyA ? (
             <div className="bg-gray-800 rounded-full w-8 h-8 flex items-center justify-center">
-                <span className="text-white text-sm">A</span>
+                <span className="text-white text-sm">{initial}</span>
             </div>
         ) : (
             <div className="bg-gradient-to-br from-purple-500 to-blue-500 rounded-full w-8 h-8 flex items-center justify-center">
-                <span className="text-white text-sm">B</span>
+                <span className="text-white text-sm">{initial}</span>
             </div>
         );
     };
 
     const columns = [
-        'No', 'Time', 'Company', 'Key Product Line', 'Country', 'Platform', 'Actions'
+        'No', 'Time', 'Company', 'Table', 'Date', 'Platform', 'Status'
     ];
 
     return (
@@ -102,7 +105,7 @@ export default function NotApprovalUser() {
             <table className="w-full border-collapse table-auto">
                 <TableHeader columns={columns} />
                 <tbody>
-                    {data.map((row, index) => (
+                    {matchmakings.map((row, index) => (
                         <TableRow 
                             key={row.id} 
                             row={row} 
