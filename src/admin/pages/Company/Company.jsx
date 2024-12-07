@@ -322,7 +322,7 @@ export default function Company(){
                 {/* Contact Info */}
                 <div>
                 <h3 className="text-lg font-semibold border-b pb-2 mb-4">Contact Information</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-3 gap-4">
                     <div>
                     <p className="text-sm font-medium text-gray-600">Representative Name:</p>
                     <p className="text-lg text-gray-800">{selectedRow.representative_name}</p>
@@ -384,6 +384,38 @@ export default function Company(){
                         ))}
                     </div>
                     </div>
+
+                    {/* biz_matc */}
+                    <div>
+                    <p className="text-sm font-medium text-gray-600">Biz Match:</p>
+                    <div className="flex flex-wrap gap-2 mt-2">
+                        {selectedRow.biz_match.map((product, index) => (
+                        <span
+                            key={index}
+                            className="px-3 py-1 text-sm bg-blue-100 text-gray-800 rounded-full"
+                        >
+                            {product}
+                        </span>
+                        ))}
+                    </div>
+                    </div>
+
+                    {/* preferred paltform*/}
+                    <div>
+                    <p className="text-sm font-medium text-gray-600">Preferred Platform:</p>
+                    <div className="flex flex-wrap gap-2 mt-2">
+                        {selectedRow.preferred_platform.map((product, index) => (
+                        <span
+                            key={index}
+                            className="px-3 py-1 text-sm bg-blue-100 text-gray-800 rounded-full"
+                        >
+                            {product}
+                        </span>
+                        ))}
+                    </div>
+                    </div>
+
+                    
                 </div>
                 </div>
             </div>
