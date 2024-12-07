@@ -26,7 +26,6 @@ export default function Register() {
     setField("conference_id", id); 
   }, [setField]);
 
-
   const handleSubmit = async () => {
     try {
       const res = await submitForm(); 

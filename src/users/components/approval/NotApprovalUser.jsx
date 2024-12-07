@@ -22,8 +22,8 @@ const TableRow = ({ row, index, getLogo, getStatusColor }) => {
             </TableCell>
             <TableCell className="text-gray-800">
                 <div className="flex items-center gap-2">
-                    {getLogo(row.company_book.company_name)}
-                    <span>{row.company_book.company_name}</span>
+                    {getLogo(row.company_match.company_name)}
+                    <span>{row.company_match.company_name}</span>
                 </div>
             </TableCell>
             <TableCell className="text-gray-800">{row.table.name_table}</TableCell>

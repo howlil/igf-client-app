@@ -23,9 +23,13 @@ export default function Login() {
       formData.append('password', password);
 
       const response = await api.post('/login', formData);
+
+      console.log(response.data)
       if (response.data.success) {
         localStorage.setItem('token', response.data.data.token)
         localStorage.setItem('username', response.data.data.username)
+        localStorage.setItem('name', response.data.data.company_name)
+
         api.defaults.headers['Authorization'] = `Bearer ${response.data.data.token}`;
         Swal.fire({
           text: response.data.message,

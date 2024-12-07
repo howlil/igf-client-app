@@ -63,6 +63,8 @@ export default function ScheduleUser() {
     await getCompanyCalendar(company.id);
   };
 
+  console.log(companyCalendar,"text")
+
   // Handler for booking a specific time slot
   const handleBookMeeting = async (timeSlot) => {
     const [start] = timeSlot.split(' - ');

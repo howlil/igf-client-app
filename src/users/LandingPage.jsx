@@ -1,10 +1,13 @@
 import { useEffect, useState, useRef } from 'react';
-import { Link } from 'react-router-dom'; 
+import { Link } from 'react-router-dom';
 import api from '../utils/api';
+import { useIslogin, useIsAdmin } from '../utils/utils.js';
 
 export default function LandingPage() {
   const [dataConf, setData] = useState([]);
-  const b2bRef = useRef(null); 
+  const b2bRef = useRef(null);
+  const ISLOGIN = useIslogin()
+  const ISADMIN = useIsAdmin()
 
   const scrollToB2B = () => {
     if (b2bRef.current) {
@@ -32,6 +35,16 @@ export default function LandingPage() {
   useEffect(() => {
     fetchConf();
   }, []);
+
+  console.log(ISADMIN)
+
+  function handleDashboard() {
+    if (ISADMIN) {
+      window.location.href = "/dashboard-table"
+    } else {
+      window.location.href = "/u/companies"
+    }
+  }
 
   return (
     <div className="bg-gradient-to-b from-gray-200 via-white to-gray-200">
@@ -87,17 +100,28 @@ export default function LandingPage() {
       <div className="bg-bg-login bg-center bg-cover">
         <footer className="bg-red opacity-70 z-10 py-10 px-4">
           <div className="flex flex-col md:flex-row justify-center items-center space-y-4 md:space-y-0 md:space-x-6">
-            <button
-              onClick={scrollToB2B} 
-              className="text-white border hover:bg-white hover:text-black border-white font-bold px-6 py-2 rounded-md transition"
-            >
-              REGISTER
-            </button>
-            <a href="/login">
-              <button className="bg-white text-red font-bold px-6 py-2 rounded-md hover:bg-gray-100 hover:text-black transition">
-                LOGIN
-              </button>
-            </a>
+            {ISLOGIN ? (
+              <>
+                <button onClick={handleDashboard} className="bg-white text-red font-bold px-6 py-2 rounded-md hover:bg-gray-100 hover:text-black transition">
+                  Dashboard
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  onClick={scrollToB2B}
+                  className="text-white border hover:bg-white hover:text-black border-white font-bold px-6 py-2 rounded-md transition"
+                >
+                  REGISTER
+                </button>
+                <a href="/login">
+                  <button className="bg-white text-red font-bold px-6 py-2 rounded-md hover:bg-gray-100 hover:text-black transition">
+                    LOGIN
+                  </button>
+                </a>
+              </>
+            )}
+
           </div>
         </footer>
       </div>

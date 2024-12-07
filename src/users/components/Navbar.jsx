@@ -49,7 +49,7 @@ const LogoutModal = ({ isOpen, onClose, onConfirm }) => {
 };
 
 export default function Navbar() {
-  const username = localStorage.getItem('username')
+  const username = localStorage.getItem('name')
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
@@ -88,6 +88,7 @@ export default function Navbar() {
     setShowLogoutModal(false);
     localStorage.removeItem("token");
     localStorage.removeItem("username");
+    localStorage.removeItem("name");
     window.location.href = "/";
   };
 

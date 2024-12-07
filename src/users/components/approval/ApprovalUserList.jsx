@@ -118,8 +118,8 @@ export default function ApprovalUserList() {
                             </TableCell>
                             <TableCell className="text-gray-800">
                                 <div className="flex items-center gap-2">
-                                    {renderLogo(row.company_match.company_name)}
-                                    <span>{row.company_match.company_name}</span>
+                                    {renderLogo(row.company_book.company_name)}
+                                    <span>{row.company_book.company_name}</span>
                                 </div>
                             </TableCell>
                             <TableCell className="text-gray-800">{row.table.name_table}</TableCell>
