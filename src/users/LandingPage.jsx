@@ -17,7 +17,7 @@ export default function LandingPage() {
 
   const fetchConf = async () => {
     try {
-      const response = await api.get("/list-conferences");
+      const response = await api.get("/list-conference");
 
       const formattedData = response.data.data.map((item) => ({
         name: item.name,
@@ -39,7 +39,7 @@ export default function LandingPage() {
       <header className="flex items-center justify-center h-screen px-4">
         <div className="flex items-center justify-center">
           <img
-            src="/public/admin/logo.png"
+            src="/admin/logo.png"
             alt="Logo"
             className="w-3/4 md:w-1/2"
           />

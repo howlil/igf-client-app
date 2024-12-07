@@ -28,9 +28,9 @@ const InputPassword = ({ name, label, placeholder, value, onChange, className, d
           onClick={togglePasswordVisibility}
         >
           {showPassword ? (
-            <img src="/public/admin/hide-pass.svg" alt="Hide Password" className="h-7 w-7" />
+            <img src="/admin/hide-pass.svg" alt="Hide Password" className="h-7 w-7" />
           ) : (
-            <img src="/public/admin/show-pass.svg" alt="Show Password" className="h-7 w-7" />
+            <img src="/admin/show-pass.svg" alt="Show Password" className="h-7 w-7" />
           )}
         </button>
       </div>

@@ -55,7 +55,7 @@ export default function Navbar() {
             <div className="flex shrink-0 items-center">
               <img
                 alt="Revival TV"
-                src="/public/admin/logo.png"
+                src="/admin/logo.png"
                 className="h-8 w-auto"
               />
             </div>

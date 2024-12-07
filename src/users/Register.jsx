@@ -68,7 +68,7 @@ export default function Register() {
         <div className="absolute inset-0 bg-white opacity-70 z-10"></div>
         <div className="z-50 w-full md:flex md:items-center md:justify-between p-5 ">
           <div className="w-full pb-10 md:pb-0 md:w-6/12 px-20 flex flex-col items-center">
-            <img src="/public/admin/logo.png" alt="Logo" className="w-3/4 md:w-fit" />
+            <img src="/admin/logo.png" alt="Logo" className="w-3/4 md:w-fit" />
           </div>
 
           <div className="md:w-6/12 md:px-10 ">
