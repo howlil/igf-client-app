@@ -60,7 +60,7 @@ export default function Login() {
   }
     return (
       <>
-        <section className="flex flex-col md:flex-row items-center justify-center min-h-screen bg-bg-login bg-center bg-cover">
+        <section className="flex flex-col md:flex-row items-center justify-center h-screen bg-bg-login bg-center bg-cover">
           <div className="absolute inset-0 bg-white opacity-70 z-10"></div>
           <div className="z-50 w-full md:flex md:items-center md:justify-between p-5 md:p-40">
             {/* Logo dan Welcome Text */}
