@@ -15,6 +15,11 @@ function App() {
         <Route path='/*' element={<NotFound/>}/>
         <Route path='/notAllowed' element={<NotAllowed/>}/>
         <Route path='/login' element={<Login/>}/>
+        <Route path='/register' element={<Register/>}/>
+        <Route path='/u/approval' element={<ApprovalUser/>}/>
+        <Route path='/u/schedules' element={<ScheduleUser/>}/>
+        <Route path='/u/companies' element={<CompanyUser/>}/>
+        <Route path='/u/companies/id' element={<DetailCompany/>}/>
         <Route path='/dashboard-table' element={<DashTable/>}/>
         <Route path='/approval' element={<Approval/>}/>
         <Route path='/conference' element={<Conference/>}/>
