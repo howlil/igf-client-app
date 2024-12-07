@@ -1,16 +1,25 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { XMarkIcon, CheckIcon } from "@heroicons/react/24/outline"; // Using Heroicons for close and approve icons
 import DynamicTable from "../../components/Table";
 import Navbar from "../../components/navbar";
 import Alert from "../../components/Alert";
 import AlertSuccess from "../../components/AlertSuccess";
+import api from "../../../utils/api";
+import Swal from "sweetalert2";
+import Spinner from "../../components/Spinner";
 
 export default function Approval() {
 
   const [isSuccModalOpen, setSuccModalOpen] = useState(false)
   const [isAlertOpenReject, setAlertOpenReject] = useState(false)
   const [isAlertOpenApprov, setAlertOpenApprov] = useState(false)
-  const [selectedRow, setSelectedRow] = useState(null);
+  const [selectedRow, setSelectedRow] = useState(null)
+  const [dataApprov, setData] = useState([])
+  const [isLoading, setLoading] = useState(false)
+
+  useEffect(() => {
+    fetchApprove();
+  }, []);
 
   const columns = [
     { key: "no", label: "No" },
@@ -64,8 +73,28 @@ export default function Approval() {
     setAlertOpenReject(true)
   }
 
-  const handleConfirmReject = () => {
-    setSuccModalOpen(true)
+  const handleConfirmReject = async () => {
+    try {
+      setLoading(true)
+      const formData = new FormData()
+      formData.append('approved_admin', '0')
+      const response = await api.post(`/matchmaking-approval/${selectedRow.id}`, formData)
+      if (response.data.success) {
+        setSuccModalOpen(true)
+        fetchApprove()
+      } else {
+        Swal.fire({
+          text: response.data.message,
+          icon: "error",
+          timer: 700,
+          showConfirmButton: false,
+        });
+      }
+    } catch (error) {
+      console.error(error)
+    } finally {
+      setLoading(false)
+    }
   }
 
   const handleCancelReject = () => {
@@ -84,222 +113,58 @@ export default function Approval() {
     setAlertOpenApprov(true)
   }
 
-  const handleConfirmApprove = () => {
-    setSuccModalOpen(true)
+  const handleConfirmApprove = async () => {
+    try {
+      setLoading(true)
+      const formData = new FormData()
+      formData.append('approved_admin', '1')
+      const response = await api.post(`/matchmaking-approval/${selectedRow.id}`, formData)
+      if (response.data.success) {
+        setSuccModalOpen(true)
+        fetchApprove()
+      } else {
+        Swal.fire({
+          text: response.data.message,
+          icon: "error",
+          timer: 700,
+          showConfirmButton: false,
+        });
+      }
+    } catch (error) {
+      console.error(error)
+    } finally {
+      setLoading(false)
+    }
   }
 
   const handleCancelApprove = () => {
     setAlertOpenApprov(false)
   }
 
+const fetchApprove = async () => {
+  try {
+    const response = await api.get("/matchmakings/approved-company")
 
+    const formattedData = response.data.data.map((item, index) => ({
+      id: item.id,
+      no: String(index + 1).padStart(2, "0"),
+      table: item.table.name_table,
+      date: item.table.date,
+      time: `${item.time_start} - ${item.time_end}`,
+      company:`${item.company_book.company_name} - ${item.company_match.company_name}`,
+      actions: item.approved_admin == null
+        ? 'Pending'
+        : item.approved_admin == 1
+        ? 'Approved'
+        : 'Rejected',
+    }));
 
+    setData(formattedData);
 
-  // Define data
-  const data = [
-    {
-      no: "01",
-      table: "Table 01",
-      date: "27 July 2024",
-      time: "13:00 - 14:00",
-      company: "Company A",
-      actions: "Approved",
-    },
-    {
-      no: "02",
-      table: "Table 02",
-      date: "28 July 2024",
-      time: "13:00 - 14:00",
-      company: "Company B",
-      actions: "Rejected",
-    },
-    {
-      no: "03",
-      table: "Table 01",
-      date: "29 July 2024",
-      time: "13:00 - 14:00",
-      company: "Company D",
-      actions: "Pending",
-    },
-    {
-      no: "04",
-      table: "Table 03",
-      date: "29 July 2024",
-      time: "11:00 - 12:00",
-      company: "Company B",
-      actions: "Pending",
-    },
-    {
-      no: "05",
-      table: "Table 05",
-      date: "30 July 2024",
-      time: "13:00 - 13:30",
-      company: "Company A",
-      actions: "Pending",
-    },
-    {
-      no: "06",
-      table: "Table 01",
-      date: "31 July 2024",
-      time: "15:30 - 16:00",
-      company: "Company D",
-      actions: "Pending",
-    },
-    {
-        no: "07",
-        table: "Table 01",
-        date: "31 July 2024",
-        time: "15:30 - 16:00",
-        company: "Company D",
-        actions: "Pending",
-      },
-      {
-        no: "08",
-        table: "Table 01",
-        date: "31 July 2024",
-        time: "15:30 - 16:00",
-        company: "Company D",
-        actions: "Pending",
-      },
-      {
-        no: "09",
-        table: "Table 01",
-        date: "31 July 2024",
-        time: "15:30 - 16:00",
-        company: "Company D",
-        actions: "Pending",
-      },
-      {
-        no: "10",
-        table: "Table 01",
-        date: "31 July 2024",
-        time: "15:30 - 16:00",
-        company: "Company D",
-        actions: "Pending",
-      },
-      {
-        no: "11",
-        table: "Table 01",
-        date: "31 July 2024",
-        time: "15:30 - 16:00",
-        company: "Company D",
-        actions: "Pending",
-      },
-      {
-        no: "12",
-        table: "Table 01",
-        date: "31 July 2024",
-        time: "15:30 - 16:00",
-        company: "Company D",
-        actions: "Pending",
-      },
-      {
-        no: "13",
-        table: "Table 01",
-        date: "31 July 2024",
-        time: "15:30 - 16:00",
-        company: "Company D",
-        actions: "Pending",
-      },
-      {
-        no: "14",
-        table: "Table 01",
-        date: "31 July 2024",
-        time: "15:30 - 16:00",
-        company: "Company D",
-        actions: "Pending",
-      },
-      {
-        no: "15",
-        table: "Table 01",
-        date: "31 July 2024",
-        time: "15:30 - 16:00",
-        company: "Company D",
-        actions: "Pending",
-      },
-      {
-        no: "16",
-        table: "Table 01",
-        date: "31 July 2024",
-        time: "15:30 - 16:00",
-        company: "Company D",
-        actions: "Pending",
-      },
-      {
-        no: "17",
-        table: "Table 01",
-        date: "31 July 2024",
-        time: "15:30 - 16:00",
-        company: "Company D",
-        actions: "Pending",
-      },
-      {
-        no: "18",
-        table: "Table 01",
-        date: "31 July 2024",
-        time: "15:30 - 16:00",
-        company: "Company D",
-        actions: "Pending",
-      },
-      {
-        no: "19",
-        table: "Table 01",
-        date: "31 July 2024",
-        time: "15:30 - 16:00",
-        company: "Company D",
-        actions: "Pending",
-      },
-      {
-        no: "20",
-        table: "Table 01",
-        date: "31 July 2024",
-        time: "15:30 - 16:00",
-        company: "Company D",
-        actions: "Pending",
-      },
-      {
-        no: "21",
-        table: "Table 01",
-        date: "31 July 2024",
-        time: "15:30 - 16:00",
-        company: "Company D",
-        actions: "Pending",
-      },
-
-      {
-        no: "22",
-        table: "Table 01",
-        date: "31 July 2024",
-        time: "15:30 - 16:00",
-        company: "Company D",
-        actions: "Pending",
-      },
-      {
-        no: "23",
-        table: "Table 01",
-        date: "31 July 2024",
-        time: "15:30 - 16:00",
-        company: "Company D",
-        actions: "Pending",
-      },
-      {
-        no: "24",
-        table: "Table 01",
-        date: "31 July 2024",
-        time: "15:30 - 16:00",
-        company: "Company D",
-        actions: "Pending",
-      },
-      {
-        no: "25",
-        table: "Table 01",
-        date: "31 July 2024",
-        time: "15:30 - 16:00",
-        company: "Company D",
-        actions: "Pending",
-      },
-      
-  ];
+  } catch (error) {
+    console.error(error)
+  }
+}
 
   const columnStyles = [
     "text-center",
@@ -317,16 +182,21 @@ export default function Approval() {
     "150px",
     "300px",
     "200px",
+    "200px"
   ];
 
   const [searchQuery, setSearchQuery] = useState(""); 
-  const [filteredData, setFilteredData] = useState(data); 
+  const [filteredData, setFilteredData] = useState(dataApprov); 
+
+  useEffect(() => {
+    setFilteredData(dataApprov);
+  }, [dataApprov]);
 
   const handleSearch = (event) => {
     const query = event.target.value.toLowerCase();
     setSearchQuery(query);
     setFilteredData(
-      data.filter(
+      dataApprov.filter(
         (item) =>
           item.no.toLowerCase().includes(query) ||
           item.table.toLowerCase().includes(query) ||
@@ -418,6 +288,9 @@ export default function Approval() {
           onConfirm={handleConfirmSucc}
         />
       )}
+
+      {/* spinner */}
+      {isLoading && <Spinner />}
     </>
   );
   

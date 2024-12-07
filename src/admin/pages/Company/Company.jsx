@@ -1,369 +1,85 @@
 import { useNavigate } from "react-router-dom";
 import Navbar from "../../components/navbar";
 import DynamicTable from "../../components/Table";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Alert from "../../components/Alert";
 import AlertSuccess from "../../components/AlertSuccess";
+import api from "../../../utils/api";
+import Swal from "sweetalert2";
+import Spinner from "../../components/Spinner";
 
 export default function Company(){
     const navigate = useNavigate();
 
-    const [isModalOpenAdd, setModalOpenAdd] = useState(false);
+    useEffect(() => {
+      const token = localStorage.getItem('token');
+      const username = localStorage.getItem('username')
+      if (!token && username !== 'admin') {
+        navigate('/notAllowed');
+      }
+    }, [navigate]);
+
     const [selectedRow, setSelectedRow] = useState(null);
     const [isDelModalOpen, setDelModalOpen] = useState(false)
     const [isSuccModalOpen, setSuccModalOpen] = useState(false)
     const [isDetailModalOpen, setDetailModalOpen] = useState(false)
-    const [filter, setFilter] = useState("All");
     const columns = [
         { key: "no", label: "No " },
-        { key: "name", label: "Coompany Name" },
-        { key: "representative", label: "Representative Name" },
-        { key: "email", label: "Email" },
-        { key: "type", label: "Type" },
+        { key: "company_name", label: "Coompany Name" },
+        { key: "representative_name", label: "Representative Name" },
+        { key: "company_type", label: "Type" },
         { key: "country", label: "Country" },
         { key: "actions", label: "Actions" },
     ];
+    const [companyData, setCompanyData] = useState([])
+    const [isLoading, setLoading] = useState(false)
 
-    const data = [
-        {
-          no: "01",
-          name: "Tech Innovations Ltd.",
-          email: "nadiniannisabyant26@gmail.com",
-          representative: "John Doe",
-          address: "123 Innovation Drive, Silicon Valley, CA",
-          logo: "https://via.placeholder.com/100",
-          about: "A leading company in tech innovation, specializing in AI and software development.",
-          type: "Private Business",
-          keyProducts: ["AI Solutions", "Software Development", "Cloud Services"],
-          country: "United States",
-          schedule: [
-            { date: "2024-07-27", times: ["08:00 - 08:30", "09:30 - 10:00"] },
-            { date: "2024-07-28", times: ["11:00 - 11:30", "12:30 - 13:00"] },
-            { date: "2024-07-29", times: ["11:00 - 11:30", "12:30 - 13:00"] },
-            { date: "2024-07-30", times: ["11:00 - 11:30", "12:30 - 13:00"] },
-            { date: "2024-08-1", times: ["11:00 - 11:30", "12:30 - 13:00"] },
-            { date: "2024-08-2", times: ["11:00 - 11:30", "12:30 - 13:00"] },
-            { date: "2024-08-3", times: ["11:00 - 11:30", "12:30 - 13:00"] },
-            { date: "2024-08-4", times: ["11:00 - 11:30", "12:30 - 13:00"] },
-            { date: "2024-08-5", times: ["11:00 - 11:30", "12:30 - 13:00"] },
-            { date: "2024-08-6", times: ["11:00 - 11:30", "12:30 - 13:00"] },
-          ],
-        status: "active"
-        },
-        {
-          no: "02",
-          name: "Green Energy Corp.",
-          email: "nadiniannisabyant26@gmail.com",
-          representative: "Jane Smith",
-          address: "456 Renewable Way, Toronto, Canada",
-          logo: "https://via.placeholder.com/100",
-          about: "Promoting sustainable energy solutions and innovations.",
-          type: "Government",
-          keyProducts: ["Solar Panels", "Wind Turbines", "Hydropower"],
-          country: "Canada",
-          schedule: [
-            { date: "2024-08-01", times: ["10:00 - 10:30", "11:00 - 11:30"] },
-            { date: "2024-08-02", times: ["13:00 - 13:30"] },
-          ],
-          status: "active"
-        },
-        {
-          no: "03",
-          name: "Digital Horizons",
-          email: "nadiniannisabyant26@gmail.com",
-          representative: "Alice Johnson",
-          address: "789 Future Lane, London, UK",
-          logo: "https://via.placeholder.com/100",
-          about: "Innovating the future of digital marketing and advertising.",
-          type: "Public Institution",
-          keyProducts: ["Digital Marketing", "SEO Tools", "Social Media Analytics"],
-          country: "United Kingdom",
-          schedule: [
-            { date: "2024-09-15", times: ["08:00 - 08:30", "10:00 - 10:30"] },
-          ],
-          status: "active"
-        },
-        {
-          no: "04",
-          name: "Innovate Solutions",
-          email: "nadiniannisabyant26@gmail.com",
-          representative: "Michael Lee",
-          address: "101 Solution Blvd, Sydney, Australia",
-          logo: "https://via.placeholder.com/100",
-          about: "Providing cutting-edge solutions for modern businesses.",
-          type: "Private Business",
-          keyProducts: ["Business Automation", "IT Support", "Cybersecurity"],
-          country: "Australia",
-          schedule: [
-            { date: "2024-07-22", times: ["09:00 - 09:30"] },
-            { date: "2024-07-23", times: ["14:00 - 14:30", "15:00 - 15:30"] },
-          ],
-          status: "active"
-        },
-        {
-          no: "05",
-          name: "Cybernetics Inc.",
-          email: "nadiniannisabyant26@gmail.com",
-          representative: "Emma Brown",
-          address: "202 Security Drive, Berlin, Germany",
-          logo: "https://via.placeholder.com/100",
-          about: "Experts in cybersecurity and network infrastructure.",
-          type: "Universities/Research Institutions",
-          keyProducts: ["Network Security", "Data Encryption", "Threat Analysis"],
-          country: "Germany",
-          schedule: [
-            { date: "2024-08-12", times: ["08:00 - 08:30", "09:30 - 10:00"] },
-            { date: "2024-08-13", times: ["11:00 - 11:30"] },
-          ],
-          status: "active"
-        },
-        {
-          no: "06",
-          name: "Global Tech",
-          email: "nadiniannisabyant26@gmail.com",
-          representative: "David Wilson",
-          address: "303 Tech Park, Tokyo, Japan",
-          logo: "https://via.placeholder.com/100",
-          about: "Driving global innovation in tech and robotics.",
-          type: "Associations/Organizations",
-          keyProducts: ["Robotics", "AI Assistants", "Smart Devices"],
-          country: "Japan",
-          schedule: [
-            { date: "2024-07-10", times: ["10:00 - 10:30", "12:00 - 12:30"] },
-          ],
-          status: "active"
-        },
-        {
-          no: "07",
-          name: "Bright Future Ltd.",
-          email: "nadiniannisabyant26@gmail.com",
-          representative: "Olivia Martinez",
-          address: "404 Future Road, New Delhi, India",
-          logo: "https://via.placeholder.com/100",
-          about: "Focused on the future of education and learning technologies.",
-          type: "Private Business",
-          keyProducts: ["E-Learning Platforms", "Virtual Classrooms", "Online Certifications"],
-          country: "India",
-          schedule: [
-            { date: "2024-07-05", times: ["13:00 - 13:30", "14:00 - 14:30"] },
-          ],
-          status: "active"
-        },
-        {
-          no: "08",
-          name: "SustainAbility",
-          email: "nadiniannisabyant26@gmail.com",
-          representative: "James Taylor",
-          address: "505 Eco Lane, Cape Town, South Africa",
-          logo: "https://via.placeholder.com/100",
-          about: "Advancing sustainability in industries worldwide.",
-          type: "Public Institution",
-          keyProducts: ["Sustainable Products", "Eco-Friendly Packaging", "Green Technologies"],
-          country: "South Africa",
-          schedule: [
-            { date: "2024-08-20", times: ["09:00 - 09:30", "10:30 - 11:00"] },
-          ],
-          status: "active"
-        },
-        {
-          no: "09",
-          name: "NextGen Robotics",
-          email: "nadiniannisabyant26@gmail.com",
-          representative: "Sophia Anderson",
-          address: "606 Robotics Ave, Beijing, China",
-          logo: "https://via.placeholder.com/100",
-          about: "Creating the next generation of intelligent robots.",
-          type: "Universities/Research Institutions",
-          keyProducts: ["Industrial Robots", "AI-Driven Automation"],
-          country: "China",
-          schedule: [
-            { date: "2024-09-01", times: ["08:00 - 08:30", "09:30 - 10:00"] },
-          ],
-          status: "active"
-        },
-        {
-          no: "10",
-          name: "AI Visionaries",
-          email: "nadiniannisabyant26@gmail.com",
-          representative: "Liam Thomas",
-          address: "707 AI Blvd, São Paulo, Brazil",
-          logo: "https://via.placeholder.com/100",
-          about: "Pioneers in artificial intelligence and machine learning.",
-          type: "Private Business",
-          keyProducts: ["ML Models", "AI SaaS", "Predictive Analytics"],
-          country: "Brazil",
-          schedule: [
-            { date: "2024-07-18", times: ["08:00 - 08:30", "09:00 - 09:30", "10:00 - 10:30"] },
-          ],
-          status: "deactive"
-        },
-        {
-            no: "11",
-            name: "Tech Innovations Ltd.",
-            email: "nadiniannisabyant26@gmail.com",
-            representative: "John Doe",
-            address: "123 Innovation Drive, Silicon Valley, CA",
-            logo: "https://via.placeholder.com/100",
-            about: "A leading company in tech innovation, specializing in AI and software development.",
-            type: "Private Business",
-            keyProducts: ["AI Solutions", "Software Development", "Cloud Services"],
-            country: "United States",
-            schedule: [
-              { date: "2024-07-27", times: ["08:00 - 08:30", "09:30 - 10:00"] },
-              { date: "2024-07-28", times: ["11:00 - 11:30", "12:30 - 13:00"] },
-            ],
-            status: "deactive"
-          },
-          {
-            no: "12",
-            name: "Green Energy Corp.",
-            email: "nadiniannisabyant26@gmail.com",
-            representative: "Jane Smith",
-            address: "456 Renewable Way, Toronto, Canada",
-            logo: "https://via.placeholder.com/100",
-            about: "Promoting sustainable energy solutions and innovations.",
-            type: "Government",
-            keyProducts: ["Solar Panels", "Wind Turbines", "Hydropower"],
-            country: "Canada",
-            schedule: [
-              { date: "2024-08-01", times: ["10:00 - 10:30", "11:00 - 11:30"] },
-              { date: "2024-08-02", times: ["13:00 - 13:30"] },
-            ],
-            status: "deactive"
-          },
-          {
-            no: "13",
-            name: "Digital Horizons",
-            email: "nadiniannisabyant26@gmail.com",
-            representative: "Alice Johnson",
-            address: "789 Future Lane, London, UK",
-            logo: "https://via.placeholder.com/100",
-            about: "Innovating the future of digital marketing and advertising.",
-            type: "Public Institution",
-            keyProducts: ["Digital Marketing", "SEO Tools", "Social Media Analytics"],
-            country: "United Kingdom",
-            schedule: [
-              { date: "2024-09-15", times: ["08:00 - 08:30", "10:00 - 10:30"] },
-            ],
-            status: "deactive"
-          },
-          {
-            no: "14",
-            name: "Innovate Solutions",
-            email: "nadiniannisabyant26@gmail.com",
-            representative: "Michael Lee",
-            address: "101 Solution Blvd, Sydney, Australia",
-            logo: "https://via.placeholder.com/100",
-            about: "Providing cutting-edge solutions for modern businesses.",
-            type: "Private Business",
-            keyProducts: ["Business Automation", "IT Support", "Cybersecurity"],
-            country: "Australia",
-            schedule: [
-              { date: "2024-07-22", times: ["09:00 - 09:30"] },
-              { date: "2024-07-23", times: ["14:00 - 14:30", "15:00 - 15:30"] },
-            ],
-            status: "deactive"
-          },
-          {
-            no: "15",
-            name: "Cybernetics Inc.",
-            email: "nadiniannisabyant26@gmail.com",
-            representative: "Emma Brown",
-            address: "202 Security Drive, Berlin, Germany",
-            logo: "https://via.placeholder.com/100",
-            about: "Experts in cybersecurity and network infrastructure.",
-            type: "Universities/Research Institutions",
-            keyProducts: ["Network Security", "Data Encryption", "Threat Analysis"],
-            country: "Germany",
-            schedule: [
-              { date: "2024-08-12", times: ["08:00 - 08:30", "09:30 - 10:00"] },
-              { date: "2024-08-13", times: ["11:00 - 11:30"] },
-            ],
-            status: "deactive"
-          },
-          {
-            no: "16",
-            name: "Global Tech",
-            email: "nadiniannisabyant26@gmail.com",
-            representative: "David Wilson",
-            address: "303 Tech Park, Tokyo, Japan",
-            logo: "https://via.placeholder.com/100",
-            about: "Driving global innovation in tech and robotics.",
-            type: "Associations/Organizations",
-            keyProducts: ["Robotics", "AI Assistants", "Smart Devices"],
-            country: "Japan",
-            schedule: [
-              { date: "2024-07-10", times: ["10:00 - 10:30", "12:00 - 12:30"] },
-            ],
-            status: "deactive"
-          },
-          {
-            no: "17",
-            name: "Bright Future Ltd.",
-            email: "nadiniannisabyant26@gmail.com",
-            representative: "Olivia Martinez",
-            address: "404 Future Road, New Delhi, India",
-            logo: "https://via.placeholder.com/100",
-            about: "Focused on the future of education and learning technologies.",
-            type: "Private Business",
-            keyProducts: ["E-Learning Platforms", "Virtual Classrooms", "Online Certifications"],
-            country: "India",
-            schedule: [
-              { date: "2024-07-05", times: ["13:00 - 13:30", "14:00 - 14:30"] },
-            ],
-            status: "deactive"
-          },
-          {
-            no: "18",
-            name: "SustainAbility",
-            email: "nadiniannisabyant26@gmail.com",
-            representative: "James Taylor",
-            address: "505 Eco Lane, Cape Town, South Africa",
-            logo: "https://via.placeholder.com/100",
-            about: "Advancing sustainability in industries worldwide.",
-            type: "Public Institution",
-            keyProducts: ["Sustainable Products", "Eco-Friendly Packaging", "Green Technologies"],
-            country: "South Africa",
-            schedule: [
-              { date: "2024-08-20", times: ["09:00 - 09:30", "10:30 - 11:00"] },
-            ],
-            status: "deactive"
-          },
-          {
-            no: "19",
-            name: "NextGen Robotics",
-            email: "nadiniannisabyant26@gmail.com",
-            representative: "Sophia Anderson",
-            address: "606 Robotics Ave, Beijing, China",
-            logo: "https://via.placeholder.com/100",
-            about: "Creating the next generation of intelligent robots.",
-            type: "Universities/Research Institutions",
-            keyProducts: ["Industrial Robots", "AI-Driven Automation"],
-            country: "China",
-            schedule: [
-              { date: "2024-09-01", times: ["08:00 - 08:30", "09:30 - 10:00"] },
-            ],
-            status: "deactive"
-          },
-          {
-            no: "20",
-            name: "AI Visionaries",
-            email: "nadiniannisabyant26@gmail.com",
-            representative: "Liam Thomas",
-            address: "707 AI Blvd, São Paulo, Brazil",
-            logo: "https://via.placeholder.com/100",
-            about: "Pioneers in artificial intelligence and machine learning.",
-            type: "Private Business",
-            keyProducts: ["ML Models", "AI SaaS", "Predictive Analytics"],
-            country: "Brazil",
-            schedule: [
-              { date: "2024-07-18", times: ["08:00 - 08:30", "09:00 - 09:30", "10:00 - 10:30"] },
-            ],
-            status: "deactive"
-          },
-    ];
 
-    const [companyData, setCompanyData] = useState(data)
+    useEffect(() => {
+      fetchCompanies();
+    }, []);
+  
+    const fetchCompanies = async () => {
+      try {
+        const response = await api.get("/companys");
+  
+        const formattedData = response.data.data.map((item, index) => {
+          const scheduleMap = item.schedule.reduce((acc, schedule) => {
+            const existingSchedule = acc.find((s) => s.date === schedule.date);
+            if (existingSchedule) {
+              existingSchedule.times.push(`${schedule.time_start} - ${schedule.time_end}`);
+            } else {
+              acc.push({
+                date: schedule.date,
+                times: [`${schedule.time_start} - ${schedule.time_end}`],
+              });
+            }
+            return acc;
+          }, []);
+  
+          return {
+            no: String(index + 1).padStart(2, "0"),
+            company_name: item.company_name,
+            representative_name: item.representative_name,
+            address: item.address,
+            company_logo: `${import.meta.env.VITE_API_URL}/${item.company_logo}`,
+            about_us: item.about_us,
+            company_type: item.company_type,
+            key_product_line: item.key_product_line.map((line) => line.name),
+            country: item.country,
+            schedule: scheduleMap,
+            biz_match: item.biz_match.map((match) => match.name),
+            preferred_platform: item.preferred_platform.map((platform) => platform.name),
+            status: item.status === "1" ? "active" : "inactive",
+            id: item.id
+          };
+        });
+  
+        setCompanyData(formattedData);
+      } catch (error) {
+        console.error("Error fetching companies:", error);
+      }
+    };
 
     const columnStyles = [
         "text-center",
@@ -376,7 +92,7 @@ export default function Company(){
       
 
     const [searchQuery, setSearchQuery] = useState(""); 
-    const [filteredData, setFilteredData] = useState(data); 
+    const [filteredData, setFilteredData] = useState(companyData); 
   
 
 
@@ -391,9 +107,27 @@ export default function Company(){
         setDelModalOpen(true)
     };
 
-    const handleConfirm = () => {
-        setDelModalOpen(false)
-        setSuccModalOpen(true)
+    const handleConfirm = async () => {
+      try {
+        setLoading(true)
+        const response = await api.delete(`/conmpanys/${selectedRow.id}`)
+        if (response.data.success) {
+            setDelModalOpen(false)
+            setSuccModalOpen(true)
+            fetchCompanies()
+        } else {
+          Swal.fire({
+            text: response.data.message,
+            icon: "error",
+            timer: 700,
+            showConfirmButton: false, 
+          });
+        }
+      } catch (error) {
+        console.error(error)
+      } finally {
+        setLoading(false)
+      }
     }
     
     const handleCancel = () => {
@@ -404,26 +138,51 @@ export default function Company(){
         setSuccModalOpen(false)
     }
 
-    const handleToggleStatus = (row, event) => {
-        event.stopPropagation(); // Prevent triggering row click event
-        const updatedData = companyData.map((company) =>
-          company.no === row.no
-            ? { ...company, status: company.status === "active" ? "deactive" : "active" }
-            : company
-        );
-        setCompanyData(updatedData);
-      
-        // Update the filtered data as well to reflect the change in the UI
-        const updatedFilteredData = updatedData.filter(
-          (item) =>
-            item.no.toLowerCase().includes(searchQuery) ||
-            item.name.toLowerCase().includes(searchQuery) ||
-            item.representative.toLowerCase().includes(searchQuery) ||
-            item.email.toLowerCase().includes(searchQuery) ||
-            item.type.toLowerCase().includes(searchQuery) ||
-            item.country.toLowerCase().includes(searchQuery)
-        );
-        setFilteredData(updatedFilteredData);
+    const handleToggleStatus = async (row, event) => {
+      event.stopPropagation();
+    
+      try {
+        const newStatus = row.status === "active" ? 0 : 1;
+
+        const formData = new FormData();
+        formData.append("status", newStatus);
+        formData.append("_method", "PUT");
+    
+        const response = await api.post(`/companys/${row.id}`, formData);
+    
+        if (response.data.success) {
+          const updatedData = companyData.map((company) =>
+            company.no === row.no
+              ? { ...company, status: newStatus === 1 ? "active" : "inactive" }
+              : company
+          );
+    
+          setCompanyData(updatedData);
+          setFilteredData(
+            updatedData.filter((item) =>
+              [item.no, item.company_name, item.representative_name, item.company_type, item.country]
+                .some((field) => field.toLowerCase().includes(searchQuery))
+            )
+          );
+    
+          await fetchCompanies();
+        } else {
+          Swal.fire({
+            text: response.data.message,
+            icon: "error",
+            timer: 700,
+            showConfirmButton: false,
+          });
+        }
+      } catch (error) {
+        console.error("Error toggling status:", error);
+        Swal.fire({
+          text: "An error occurred while updating status.",
+          icon: "error",
+          timer: 700,
+          showConfirmButton: false,
+        });
+      }
     };
 
     const handleSearch = (event) => {
@@ -433,10 +192,9 @@ export default function Company(){
     const displayedData = companyData.filter(
         (item) =>
           item.no.toLowerCase().includes(searchQuery) ||
-          item.name.toLowerCase().includes(searchQuery) ||
-          item.representative.toLowerCase().includes(searchQuery) ||
-          item.email.toLowerCase().includes(searchQuery) ||
-          item.type.toLowerCase().includes(searchQuery) ||
+          item.company_name.toLowerCase().includes(searchQuery) ||
+          item.representative_name.toLowerCase().includes(searchQuery) ||
+          item.company_type.toLowerCase().includes(searchQuery) ||
           item.country.toLowerCase().includes(searchQuery)
     );
     
@@ -450,7 +208,7 @@ export default function Company(){
             {/* Title and Button */}
             <div className="flex justify-between items-center mb-4">
                 <div>
-                <h1 className="text-2xl font-bold">Conference</h1>
+                <h1 className="text-2xl font-bold pb-5">Company</h1>
                 <p className="w-full md:w-1/2">
                     Lorem ipsum dolor sit amet consectetur adipisicing elit.
                     Deleniti quaerat laboriosam earum voluptatibus soluta amet autem
@@ -549,29 +307,25 @@ export default function Company(){
                 <div>
                 <div className="flex items-center space-x-4">
                     <img
-                    src={selectedRow.logo}
+                    src={selectedRow.company_logo}
                     alt="Company Logo"
                     className="w-16 h-16 rounded-full object-cover border border-gray-200"
                     />
                     <div>
-                    <h3 className="text-lg font-semibold">{selectedRow.name}</h3>
-                    <p className="text-sm text-gray-600">{selectedRow.type}</p>
+                    <h3 className="text-lg font-semibold">{selectedRow.company_name}</h3>
+                    <p className="text-sm text-gray-600">{selectedRow.company_type}</p>
                     </div>
                 </div>
-                <p className="mt-4 text-sm text-gray-700">{selectedRow.about}</p>
+                <p className="mt-4 text-sm text-gray-700">{selectedRow.about_us}</p>
                 </div>
 
                 {/* Contact Info */}
                 <div>
                 <h3 className="text-lg font-semibold border-b pb-2 mb-4">Contact Information</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-3 gap-4">
                     <div>
                     <p className="text-sm font-medium text-gray-600">Representative Name:</p>
-                    <p className="text-lg text-gray-800">{selectedRow.representative}</p>
-                    </div>
-                    <div>
-                    <p className="text-sm font-medium text-gray-600">Email:</p>
-                    <p className="text-lg text-gray-800">{selectedRow.email}</p>
+                    <p className="text-lg text-gray-800">{selectedRow.representative_name}</p>
                     </div>
                     <div className="md:col-span-2">
                     <p className="text-sm font-medium text-gray-600">Address:</p>
@@ -586,7 +340,7 @@ export default function Company(){
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                     <p className="text-sm font-medium text-gray-600">Type:</p>
-                    <p className="text-lg text-gray-800">{selectedRow.type}</p>
+                    <p className="text-lg text-gray-800">{selectedRow.company_type}</p>
                     </div>
                     <div>
                     <p className="text-sm font-medium text-gray-600">Country:</p>
@@ -603,7 +357,7 @@ export default function Company(){
                     <div>
                     <p className="text-sm font-medium text-gray-600">Key Product Lines:</p>
                     <div className="flex flex-wrap gap-2 mt-2">
-                        {selectedRow.keyProducts.map((product, index) => (
+                        {selectedRow.key_product_line.map((product, index) => (
                         <span
                             key={index}
                             className="px-3 py-1 text-sm bg-blue-100 text-gray-800 rounded-full"
@@ -630,6 +384,38 @@ export default function Company(){
                         ))}
                     </div>
                     </div>
+
+                    {/* biz_matc */}
+                    <div>
+                    <p className="text-sm font-medium text-gray-600">Biz Match:</p>
+                    <div className="flex flex-wrap gap-2 mt-2">
+                        {selectedRow.biz_match.map((product, index) => (
+                        <span
+                            key={index}
+                            className="px-3 py-1 text-sm bg-blue-100 text-gray-800 rounded-full"
+                        >
+                            {product}
+                        </span>
+                        ))}
+                    </div>
+                    </div>
+
+                    {/* preferred paltform*/}
+                    <div>
+                    <p className="text-sm font-medium text-gray-600">Preferred Platform:</p>
+                    <div className="flex flex-wrap gap-2 mt-2">
+                        {selectedRow.preferred_platform.map((product, index) => (
+                        <span
+                            key={index}
+                            className="px-3 py-1 text-sm bg-blue-100 text-gray-800 rounded-full"
+                        >
+                            {product}
+                        </span>
+                        ))}
+                    </div>
+                    </div>
+
+                    
                 </div>
                 </div>
             </div>
@@ -658,6 +444,8 @@ export default function Company(){
           onConfirm={handleConfirmSucc}
         />
       )}
+
+      {isLoading && <Spinner />}
 
 
 

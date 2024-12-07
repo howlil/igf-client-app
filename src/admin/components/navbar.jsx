@@ -1,25 +1,42 @@
 import { Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
-import { useLocation } from 'react-router-dom'
-
-
+import { useLocation, useNavigate } from 'react-router-dom'
+import api from '../../utils/api'
+import { useState } from 'react'
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
 
 export default function Navbar() {
-    const location = useLocation()
-    const navigation = [
-        { name: 'Dashboard', hrefs: [ '/dashboard-table','/' ], current: false },
-        { name: 'Conference', hrefs: ['/conference'], current: false },
-        { name: 'Company', hrefs: ['/company'], current: false },
-        { name: 'Approval', hrefs: ['/approval'], current: false },
-    ];
+  const location = useLocation()
+  const navigate = useNavigate() // Hook untuk navigasi setelah logout
+  const navigation = [
+    { name: 'Dashboard', hrefs: ['/dashboard-table', '/'], current: false },
+    { name: 'Conference', hrefs: ['/conference'], current: false },
+    { name: 'Company', hrefs: ['/company'], current: false },
+    { name: 'Approval', hrefs: ['/approval'], current: false },
+  ];
+  const [isLoading, setLoading] = useState(false)
 
-    navigation.forEach(item => {
-        item.current = item.hrefs.some(href => location.pathname === href);
-    });
+  navigation.forEach(item => {
+    item.current = item.hrefs.some(href => location.pathname === href);
+  });
+
+  // Fungsi logout yang akan memanggil API logout
+  const handleLogout = async () => {
+    try {
+      setLoading(true)
+      await api.post('/logout');
+      localStorage.removeItem('token')
+      localStorage.removeItem('username')
+      navigate('/login'); 
+    } catch (error) {
+      console.error('Logout failed:', error);
+    } finally {
+      setLoading(false)
+    }
+  };
 
   return (
     <Disclosure as="nav" className="bg-white">
@@ -30,7 +47,7 @@ export default function Navbar() {
             <DisclosureButton className="group relative inline-flex items-center justify-center p-2">
               <span className="absolute -inset-0.5" />
               <span className="sr-only">Open main menu</span>
-              <Bars3Icon aria-hidden="true  " className="block size-6 group-data-[open]:hidden" />
+              <Bars3Icon aria-hidden="true" className="block size-6 group-data-[open]:hidden" />
               <XMarkIcon aria-hidden="true" className="hidden size-6 group-data-[open]:block" />
             </DisclosureButton>
           </div>
@@ -63,32 +80,25 @@ export default function Navbar() {
               </div>
             </div>
             <Menu as="div" className="relative ml-3">
-                <div className='flex items-center space-x-2'> 
+              <div className='flex items-center space-x-2'> 
                 <MenuButton className="flex items-center space-x-2"> 
-                    <span className="sr-only">Open user menu</span>
-                    <img
+                  <span className="sr-only">Open user menu</span>
+                  <img
                     alt="Profile picture of Nadini Annisa"
                     src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
                     className="w-8 h-8 rounded-full" 
-                    />
-                    <p className='text-sm hidden md:block font-semibold px-2'>Nadini Annisa</p>
+                  />
+                  <p className='text-sm hidden md:block font-semibold px-2'>Nadini Annisa</p>
                 </MenuButton>
-                </div>
+              </div>
               <MenuItems
                 transition
                 className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black/5 transition focus:outline-none data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in"
               >
-                {/* <MenuItem>
-                  <a
-                    href="#"
-                    className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100 data-[focus]:outline-none"
-                  >
-                    Your Profile
-                  </a>
-                </MenuItem> */}
                 <MenuItem>
                   <a
                     href="#"
+                    onClick={handleLogout} // Menambahkan event handler untuk logout
                     className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100 data-[focus]:outline-none"
                   >
                     Logout
@@ -119,5 +129,5 @@ export default function Navbar() {
         </div>
       </DisclosurePanel>
     </Disclosure>
-  )
+  );
 }

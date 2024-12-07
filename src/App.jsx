@@ -11,6 +11,7 @@ import ApprovalUser from './users/ApprovalUser';
 import Register from './users/Register';
 import DetailCompany from './users/components/company/DetailCompany';
 import ScheduleUser from './users/ScheduleUser';
+import NotAllowed from './NotAllowed';
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
     <Router>
       <Routes>
         <Route path='/*' element={<NotFound/>}/>
+        <Route path='/notAllowed' element={<NotAllowed/>}/>
         <Route path='/' element={<LandingPage/>}/>
         <Route path='/login' element={<Login/>}/>
         <Route path='/register' element={<Register/>}/>
