@@ -1,12 +1,11 @@
 import { useEffect, useState, useRef } from 'react';
-import { Link } from 'react-router-dom'; // Import Link dari react-router-dom
+import { Link } from 'react-router-dom'; 
 import api from '../utils/api';
 
 export default function LandingPage() {
   const [dataConf, setData] = useState([]);
-  const b2bRef = useRef(null); // Membuat ref untuk bagian B2B Matchmaking
+  const b2bRef = useRef(null); 
 
-  // Fungsi untuk melakukan scroll ke bagian B2B Matchmaking
   const scrollToB2B = () => {
     if (b2bRef.current) {
       b2bRef.current.scrollIntoView({
