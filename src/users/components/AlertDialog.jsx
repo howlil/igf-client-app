@@ -1,13 +1,11 @@
 import { useEffect, useState, useRef } from 'react';
-import { Link } from 'react-router-dom';
-import api from '../utils/api';
-import { useIslogin, useIsAdmin } from '../utils/utils.js';
+import { Link } from 'react-router-dom'; 
+import api from '../../utils/api';
+import Slider from 'react-slick';
 
 export default function LandingPage() {
   const [dataConf, setData] = useState([]);
   const b2bRef = useRef(null);
-  const ISLOGIN = useIslogin()
-  const ISADMIN = useIsAdmin()
 
   const scrollToB2B = () => {
     if (b2bRef.current) {
@@ -24,7 +22,10 @@ export default function LandingPage() {
 
       const formattedData = response.data.data.map((item) => ({
         name: item.name,
-        id: item.id
+        id: item.id,
+        description: item.description,
+        speaker: item.speaker,
+        moderator: item.moderator
       }));
       setData(formattedData);
     } catch (error) {
@@ -36,15 +37,17 @@ export default function LandingPage() {
     fetchConf();
   }, []);
 
-  console.log(ISADMIN)
-
-  function handleDashboard() {
-    if (ISADMIN) {
-      window.location.href = "/dashboard-table"
-    } else {
-      window.location.href = "/u/companies"
-    }
-  }
+  // Slider settings
+  const sliderSettings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    arrows: true, // Menampilkan tombol kiri dan kanan
+    prevArrow: <button className="slick-prev slick-arrow">{"<"}</button>,
+    nextArrow: <button className="slick-next slick-arrow">{">"}</button>
+  };
 
   return (
     <div className="bg-gradient-to-b from-gray-200 via-white to-gray-200">
@@ -96,32 +99,55 @@ export default function LandingPage() {
         </section>
       </div>
 
+      {/* Detail Conference Section - Before Footer */}
+      <div className="py-20 px-4 bg-gray-100">
+        <h2 className="text-2xl md:text-4xl font-bold text-center text-gray-800 mb-10">
+          Conference Details
+        </h2>
+
+        <Slider {...sliderSettings}>
+          {dataConf.map((conference) => (
+            <div key={conference.id} className="flex justify-center items-center space-x-4">
+              <div className="w-1/2">
+                <img
+                  src={`https://via.placeholder.com/600x400`} // Gambar conference
+                  alt={conference.name}
+                  className="w-full h-64 object-cover rounded-lg shadow-md"
+                />
+              </div>
+
+              <div className="w-1/2 text-gray-800">
+                <h3 className="text-xl font-bold mb-4">{conference.name}</h3>
+                <p className="text-base mb-4">{conference.description}</p>
+                <div className="mb-4">
+                  <h4 className="font-semibold">Speaker:</h4>
+                  <p className="text-sm">{conference.speaker}</p>
+                </div>
+                <div>
+                  <h4 className="font-semibold">Moderator:</h4>
+                  <p className="text-sm">{conference.moderator}</p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </Slider>
+      </div>
+
       {/* Footer */}
       <div className="bg-bg-login bg-center bg-cover">
         <footer className="bg-red opacity-70 z-10 py-10 px-4">
           <div className="flex flex-col md:flex-row justify-center items-center space-y-4 md:space-y-0 md:space-x-6">
-            {ISLOGIN ? (
-              <>
-                <button onClick={handleDashboard} className="bg-white text-red font-bold px-6 py-2 rounded-md hover:bg-gray-100 hover:text-black transition">
-                  Dashboard
-                </button>
-              </>
-            ) : (
-              <>
-                <button
-                  onClick={scrollToB2B}
-                  className="text-white border hover:bg-white hover:text-black border-white font-bold px-6 py-2 rounded-md transition"
-                >
-                  REGISTER
-                </button>
-                <a href="/login">
-                  <button className="bg-white text-red font-bold px-6 py-2 rounded-md hover:bg-gray-100 hover:text-black transition">
-                    LOGIN
-                  </button>
-                </a>
-              </>
-            )}
-
+            <button
+              onClick={scrollToB2B} 
+              className="text-white border hover:bg-white hover:text-black border-white font-bold px-6 py-2 rounded-md transition"
+            >
+              REGISTER
+            </button>
+            <a href="/login">
+              <button className="bg-white text-red font-bold px-6 py-2 rounded-md hover:bg-gray-100 hover:text-black transition">
+                LOGIN
+              </button>
+            </a>
           </div>
         </footer>
       </div>
