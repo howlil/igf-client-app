@@ -65,7 +65,7 @@ export default function Register() {
   return (
     <div>
       <section className="flex flex-col md:flex-row items-center justify-center min-h-screen bg-bg-login bg-center bg-cover">
-        <div className="absolute inset-0 bg-white opacity-70 z-10"></div>
+        <div className="absolute h-screen inset-0 bg-white opacity-70 z-10"></div>
         <div className="z-50 w-full md:flex md:items-center md:justify-between p-5 ">
           <div className="w-full pb-10 md:pb-0 md:w-6/12 px-20 flex flex-col items-center">
             <img src="/admin/logo.png" alt="Logo" className="w-3/4 md:w-fit" />

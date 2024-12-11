@@ -9,6 +9,7 @@ export default function LandingPage() {
   const b2bRef = useRef(null);
   const ISLOGIN = useIslogin();
   const ISADMIN = useIsAdmin();
+  const [isLoading, setLoading] = useState(false)
 
   const scrollToB2B = () => {
     if (b2bRef.current) {
@@ -21,6 +22,7 @@ export default function LandingPage() {
 
   const fetchConf = async () => {
     try {
+      setLoading(true)
       const response = await api.get("/list-conference");
 
       const formattedData = response.data.data.map((item) => ({
@@ -29,10 +31,13 @@ export default function LandingPage() {
         description: item.description,
         speaker: item.speaker,
         moderator: item.moderator,
+        image: item.image
       }));
       setData(formattedData);
     } catch (error) {
       console.error(error);
+    } finally {
+      setLoading(false)
     }
   };
 
@@ -89,7 +94,7 @@ export default function LandingPage() {
               >
                 <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden">
                   <img
-                    src={`https://via.placeholder.com/300x200`}
+                    src={`http://api-igf-connect.metrosoftware.id/${conference.image}`}
                     alt={conference.name}
                     className="w-full h-40 object-cover"
                   />
@@ -140,7 +145,7 @@ export default function LandingPage() {
                 {/* Image Section */}
                 <div className="w-full md:w-1/2">
                   <img
-                    src={`https://via.placeholder.com/800x400`}
+                    src={`http://api-igf-connect.metrosoftware.id/${dataConf[currentSlide].image}`}
                     alt={dataConf[currentSlide].name}
                     className="w-full rounded-lg"
                   />
@@ -239,6 +244,12 @@ export default function LandingPage() {
           </div>
         </footer>
       </div>
+
+      {isLoading && (
+          <div className="fixed inset-0 flex items-center justify-center bg-gray-100 z-50">
+          <div className="animate-spin rounded-full h-24 w-24 border-t-4 border-b-4 border-red-500"></div>
+        </div>
+      )}
     </div>
   );
 }
